@@ -68,9 +68,6 @@ export const MaintenanceDashboardPage: React.FC = () => {
         <Button size="sm" variant="outline" onClick={() => navigate({ to: '/vendors' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Add Vendor
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/maintenance/assets' })} className="flex items-center gap-1">
-          <Plus className="w-4 h-4" /> Add Asset
-        </Button>
       </div>
 
       {/* STATS METRIC GRID */}

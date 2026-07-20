@@ -42,8 +42,12 @@ export const NewRequestPage: React.FC = () => {
     mutationFn: (values: RequestFormValues) => {
       const prop = properties.find((p) => p.id === values.propertyId);
       const unit = units.find((u) => u.id === values.unitId);
+      const title = values.description
+        ? values.description.slice(0, 40) + (values.description.length > 40 ? '...' : '')
+        : `${values.category} Service Request`;
       return api.serviceRequests.create({
         ...values,
+        title,
         propertyName: prop ? prop.name : 'Property Location',
         unitNumber: unit ? unit.unitNumber : '101',
       });

@@ -1910,6 +1910,32 @@ const NewCompanyPage: React.FC = () => {
     const updatedList = [...companiesList, newCompany];
     localStorage.setItem('companies', JSON.stringify(updatedList));
 
+    // Also register the primary contact person as the first administrator user for this company
+    const storedUsers = localStorage.getItem('company_users');
+    let usersList = [];
+    if (storedUsers) {
+      usersList = JSON.parse(storedUsers);
+    } else {
+      usersList = [
+        { name: 'Sarah Davis', email: 'sarah@apexpm.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 04:33', companyName: 'Apex Property Management' },
+        { name: 'David Miller', email: 'david@apexpm.com', role: 'Property Manager', status: 'Active', lastLogin: '2026-07-19 16:10', companyName: 'Apex Property Management' },
+        { name: 'Emma Wilson', email: 'emma@apexpm.com', role: 'Staff Member', status: 'Active', lastLogin: '2026-07-20 01:24', companyName: 'Apex Property Management' },
+        { name: 'John Horizon', email: 'john@horizon.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 08:12', companyName: 'Horizon Living' },
+        { name: 'Rachel Summit', email: 'rachel@summit.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-19 12:45', companyName: 'Summit Group' }
+      ];
+    }
+
+    const newCompanyUser = {
+      name: contact,
+      email: email,
+      role: 'Administrator',
+      status: 'Active',
+      lastLogin: 'Just Registered',
+      companyName: name
+    };
+
+    localStorage.setItem('company_users', JSON.stringify([...usersList, newCompanyUser]));
+
     setSuccess(true);
     setTimeout(() => {
       navigate({ to: '/companies' });
@@ -2056,13 +2082,19 @@ const CompanyUsersPage: React.FC = () => {
     ];
   });
 
-  const allUsers = [
-    { name: 'Sarah Davis', email: 'sarah@apexpm.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 04:33', companyName: 'Apex Property Management' },
-    { name: 'David Miller', email: 'david@apexpm.com', role: 'Property Manager', status: 'Active', lastLogin: '2026-07-19 16:10', companyName: 'Apex Property Management' },
-    { name: 'Emma Wilson', email: 'emma@apexpm.com', role: 'Staff Member', status: 'Active', lastLogin: '2026-07-20 01:24', companyName: 'Apex Property Management' },
-    { name: 'John Horizon', email: 'john@horizon.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 08:12', companyName: 'Horizon Living' },
-    { name: 'Rachel Summit', email: 'rachel@summit.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-19 12:45', companyName: 'Summit Group' }
-  ];
+  const [allUsers] = React.useState<any[]>(() => {
+    const storedUsers = localStorage.getItem('company_users');
+    if (storedUsers) return JSON.parse(storedUsers);
+    const initialUsers = [
+      { name: 'Sarah Davis', email: 'sarah@apexpm.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 04:33', companyName: 'Apex Property Management' },
+      { name: 'David Miller', email: 'david@apexpm.com', role: 'Property Manager', status: 'Active', lastLogin: '2026-07-19 16:10', companyName: 'Apex Property Management' },
+      { name: 'Emma Wilson', email: 'emma@apexpm.com', role: 'Staff Member', status: 'Active', lastLogin: '2026-07-20 01:24', companyName: 'Apex Property Management' },
+      { name: 'John Horizon', email: 'john@horizon.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 08:12', companyName: 'Horizon Living' },
+      { name: 'Rachel Summit', email: 'rachel@summit.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-19 12:45', companyName: 'Summit Group' }
+    ];
+    localStorage.setItem('company_users', JSON.stringify(initialUsers));
+    return initialUsers;
+  });
 
   // Filter out users belonging to companies that are Suspended
   const visibleUsers = allUsers.filter(u => {
