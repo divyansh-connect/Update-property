@@ -1772,14 +1772,22 @@ const settingsRoute = createRoute({
 // 1. COMPANIES PAGE
 const CompaniesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [companies, setCompanies] = React.useState([
-    { id: '1', name: 'Apex Property Management', businessName: 'Apex PM LLC', code: 'APEX', contact: 'Sarah Davis', email: 'sarah@apexpm.com', phone: '555-0199', website: 'apexpm.com', status: 'Active', plan: 'Pro Plan', cycle: 'Monthly', storage: '1.2 GB', date: '2026-01-15' },
-    { id: '2', name: 'Horizon Living', businessName: 'Horizon Rentals Inc', code: 'HRZN', contact: 'Mark Wilson', email: 'mark@horizon.com', phone: '555-0244', website: 'horizonrentals.com', status: 'Active', plan: 'Basic Plan', cycle: 'Annual', storage: '800 MB', date: '2026-03-22' },
-    { id: '3', name: 'Summit Group', businessName: 'Summit Land Corp', code: 'SMMT', contact: 'Rachel Green', email: 'rachel@summit.com', phone: '555-0311', website: 'summitland.com', status: 'Suspended', plan: 'Enterprise Plan', cycle: 'Monthly', storage: '2.4 GB', date: '2026-02-10' }
-  ]);
+  const [companies, setCompanies] = React.useState<any[]>(() => {
+    const stored = localStorage.getItem('companies');
+    if (stored) return JSON.parse(stored);
+    const initial = [
+      { id: '1', name: 'Apex Property Management', businessName: 'Apex PM LLC', code: 'APEX', contact: 'Sarah Davis', email: 'sarah@apexpm.com', phone: '555-0199', website: 'apexpm.com', status: 'Active', plan: 'Pro Plan', cycle: 'Monthly', storage: '1.2 GB', date: '2026-01-15' },
+      { id: '2', name: 'Horizon Living', businessName: 'Horizon Rentals Inc', code: 'HRZN', contact: 'Mark Wilson', email: 'mark@horizon.com', phone: '555-0244', website: 'horizonrentals.com', status: 'Active', plan: 'Basic Plan', cycle: 'Annual', storage: '800 MB', date: '2026-03-22' },
+      { id: '3', name: 'Summit Group', businessName: 'Summit Land Corp', code: 'SMMT', contact: 'Rachel Green', email: 'rachel@summit.com', phone: '555-0311', website: 'summitland.com', status: 'Suspended', plan: 'Enterprise Plan', cycle: 'Monthly', storage: '2.4 GB', date: '2026-02-10' }
+    ];
+    localStorage.setItem('companies', JSON.stringify(initial));
+    return initial;
+  });
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    setCompanies(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c));
+    const updated = companies.map((c: any) => c.id === id ? { ...c, status: newStatus } : c);
+    setCompanies(updated);
+    localStorage.setItem('companies', JSON.stringify(updated));
   };
 
   return (
@@ -1816,7 +1824,7 @@ const CompaniesPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y font-medium text-foreground">
-              {companies.map(c => (
+              {companies.map((c: any) => (
                 <tr key={c.id} className="hover:bg-accent/40 transition">
                   <td className="p-4">
                     <div className="font-extrabold text-sm text-primary cursor-pointer hover:underline" onClick={() => navigate({ to: `/companies/details` })}>{c.name}</div>
@@ -1859,8 +1867,49 @@ const NewCompanyPage: React.FC = () => {
   const navigate = useNavigate();
   const [success, setSuccess] = React.useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const target = e.currentTarget;
+    const name = (target.elements.namedItem('companyName') as HTMLInputElement).value;
+    const businessName = (target.elements.namedItem('businessName') as HTMLInputElement).value;
+    const code = (target.elements.namedItem('companyCode') as HTMLInputElement).value;
+    const contact = (target.elements.namedItem('contactPerson') as HTMLInputElement).value;
+    const email = (target.elements.namedItem('email') as HTMLInputElement).value;
+    const phone = (target.elements.namedItem('phone') as HTMLInputElement).value;
+    const website = (target.elements.namedItem('website') as HTMLInputElement).value;
+    const plan = (target.elements.namedItem('plan') as HTMLSelectElement).value;
+
+    const stored = localStorage.getItem('companies');
+    let companiesList = [];
+    if (stored) {
+      companiesList = JSON.parse(stored);
+    } else {
+      companiesList = [
+        { id: '1', name: 'Apex Property Management', businessName: 'Apex PM LLC', code: 'APEX', contact: 'Sarah Davis', email: 'sarah@apexpm.com', phone: '555-0199', website: 'apexpm.com', status: 'Active', plan: 'Pro Plan', cycle: 'Monthly', storage: '1.2 GB', date: '2026-01-15' },
+        { id: '2', name: 'Horizon Living', businessName: 'Horizon Rentals Inc', code: 'HRZN', contact: 'Mark Wilson', email: 'mark@horizon.com', phone: '555-0244', website: 'horizonrentals.com', status: 'Active', plan: 'Basic Plan', cycle: 'Annual', storage: '800 MB', date: '2026-03-22' },
+        { id: '3', name: 'Summit Group', businessName: 'Summit Land Corp', code: 'SMMT', contact: 'Rachel Green', email: 'rachel@summit.com', phone: '555-0311', website: 'summitland.com', status: 'Suspended', plan: 'Enterprise Plan', cycle: 'Monthly', storage: '2.4 GB', date: '2026-02-10' }
+      ];
+    }
+
+    const newCompany = {
+      id: `company-${Date.now()}`,
+      name,
+      businessName: businessName || 'N/A',
+      code: code.toUpperCase(),
+      contact,
+      email,
+      phone: phone || 'N/A',
+      website: website || 'N/A',
+      status: 'Active',
+      plan,
+      cycle: 'Monthly',
+      storage: '0 MB',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    const updatedList = [...companiesList, newCompany];
+    localStorage.setItem('companies', JSON.stringify(updatedList));
+
     setSuccess(true);
     setTimeout(() => {
       navigate({ to: '/companies' });
@@ -1883,35 +1932,35 @@ const NewCompanyPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Company Name</label>
-            <input required placeholder="Apex Property Management" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="companyName" required placeholder="Apex Property Management" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Business Name (Legal)</label>
-            <input placeholder="Apex PM LLC" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="businessName" placeholder="Apex PM LLC" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Company Code</label>
-            <input required maxLength={5} placeholder="APEX" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary uppercase focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="companyCode" required maxLength={5} placeholder="APEX" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary uppercase focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Primary Contact Person</label>
-            <input required placeholder="Sarah Davis" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="contactPerson" required placeholder="Sarah Davis" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Email Address</label>
-            <input required type="email" placeholder="sarah@apexpm.com" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="email" required type="email" placeholder="sarah@apexpm.com" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Phone Number</label>
-            <input placeholder="555-0199" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="phone" placeholder="555-0199" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Website</label>
-            <input placeholder="www.apexpm.com" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
+            <input name="website" placeholder="www.apexpm.com" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none" />
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold uppercase text-muted-foreground">Subscription Plan</label>
-            <select className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none">
+            <select name="plan" className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-secondary focus:ring-1 focus:ring-primary focus:outline-none">
               <option>Basic Plan</option>
               <option>Pro Plan</option>
               <option>Enterprise Plan</option>
@@ -1997,17 +2046,35 @@ const CompanyDetailsPage: React.FC = () => {
 
 // 3a. COMPANY USERS LIST
 const CompanyUsersPage: React.FC = () => {
-  const users = [
-    { name: 'Sarah Davis', email: 'sarah@apexpm.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 04:33' },
-    { name: 'David Miller', email: 'david@apexpm.com', role: 'Property Manager', status: 'Active', lastLogin: '2026-07-19 16:10' },
-    { name: 'Emma Wilson', email: 'emma@apexpm.com', role: 'Staff Member', status: 'Active', lastLogin: '2026-07-20 01:24' }
+  const [companiesList] = React.useState<any[]>(() => {
+    const stored = localStorage.getItem('companies');
+    if (stored) return JSON.parse(stored);
+    return [
+      { id: '1', name: 'Apex Property Management', status: 'Active' },
+      { id: '2', name: 'Horizon Living', status: 'Active' },
+      { id: '3', name: 'Summit Group', status: 'Suspended' }
+    ];
+  });
+
+  const allUsers = [
+    { name: 'Sarah Davis', email: 'sarah@apexpm.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 04:33', companyName: 'Apex Property Management' },
+    { name: 'David Miller', email: 'david@apexpm.com', role: 'Property Manager', status: 'Active', lastLogin: '2026-07-19 16:10', companyName: 'Apex Property Management' },
+    { name: 'Emma Wilson', email: 'emma@apexpm.com', role: 'Staff Member', status: 'Active', lastLogin: '2026-07-20 01:24', companyName: 'Apex Property Management' },
+    { name: 'John Horizon', email: 'john@horizon.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-20 08:12', companyName: 'Horizon Living' },
+    { name: 'Rachel Summit', email: 'rachel@summit.com', role: 'Administrator', status: 'Active', lastLogin: '2026-07-19 12:45', companyName: 'Summit Group' }
   ];
+
+  // Filter out users belonging to companies that are Suspended
+  const visibleUsers = allUsers.filter(u => {
+    const comp = companiesList.find((c: any) => c.name === u.companyName);
+    return !comp || comp.status === 'Active';
+  });
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Company Registered Users"
-        description="Manage seat allocations, account configurations, and profiles for Apex Property Management."
+        description="Manage seat allocations, account configurations, and profiles for subscriber companies."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'Users' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
@@ -2017,16 +2084,18 @@ const CompanyUsersPage: React.FC = () => {
               <tr className="bg-muted/50 border-b text-muted-foreground font-bold uppercase tracking-wider">
                 <th className="p-4">User Name</th>
                 <th className="p-4">Email</th>
+                <th className="p-4">Associated Company</th>
                 <th className="p-4">Company Role</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Last Activity</th>
               </tr>
             </thead>
             <tbody className="divide-y font-medium text-foreground">
-              {users.map((u, i) => (
+              {visibleUsers.map((u, i) => (
                 <tr key={i} className="hover:bg-accent/40 transition">
                   <td className="p-4 font-bold">{u.name}</td>
                   <td className="p-4 font-mono">{u.email}</td>
+                  <td className="p-4 text-primary font-bold">{u.companyName}</td>
                   <td className="p-4"><StatusBadge status={u.role} /></td>
                   <td className="p-4"><StatusBadge status={u.status} /></td>
                   <td className="p-4 text-muted-foreground font-mono">{u.lastLogin}</td>
@@ -2167,26 +2236,59 @@ const SubscriptionPlansPage: React.FC = () => {
   ]);
 
   const [showCreate, setShowCreate] = React.useState(false);
+  const [editId, setEditId] = React.useState<string | null>(null);
   const [newPlan, setNewPlan] = React.useState({ name: '', price: '', cycle: 'Monthly', units: '', storage: '', features: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlan.name || !newPlan.price) return;
-    setPlans(prev => [
-      ...prev,
-      {
-        id: String(prev.length + 1),
+    if (editId) {
+      setPlans(prev => prev.map(p => p.id === editId ? {
+        ...p,
         name: newPlan.name,
         price: Number(newPlan.price),
         cycle: newPlan.cycle,
-        units: newPlan.units || 'Unlimited',
-        storage: newPlan.storage || '100 GB',
-        features: newPlan.features || 'Standard Features',
-        status: 'Active'
-      }
-    ]);
+        units: newPlan.units,
+        storage: newPlan.storage,
+        features: newPlan.features
+      } : p));
+      setEditId(null);
+    } else {
+      setPlans(prev => [
+        ...prev,
+        {
+          id: String(prev.length + 1),
+          name: newPlan.name,
+          price: Number(newPlan.price),
+          cycle: newPlan.cycle,
+          units: newPlan.units || 'Unlimited',
+          storage: newPlan.storage || '100 GB',
+          features: newPlan.features || 'Standard Features',
+          status: 'Active'
+        }
+      ]);
+    }
     setNewPlan({ name: '', price: '', cycle: 'Monthly', units: '', storage: '', features: '' });
     setShowCreate(false);
+  };
+
+  const handleEditClick = (plan: any) => {
+    setNewPlan({
+      name: plan.name,
+      price: String(plan.price),
+      cycle: plan.cycle,
+      units: plan.units,
+      storage: plan.storage,
+      features: plan.features
+    });
+    setEditId(plan.id);
+    setShowCreate(true);
+  };
+
+  const handleCancel = () => {
+    setShowCreate(false);
+    setEditId(null);
+    setNewPlan({ name: '', price: '', cycle: 'Monthly', units: '', storage: '', features: '' });
   };
 
   return (
@@ -2197,14 +2299,19 @@ const SubscriptionPlansPage: React.FC = () => {
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions' }, { label: 'Plans' }]}
         action={{
           label: 'Create Pricing Plan',
-          onClick: () => setShowCreate(!showCreate),
+          onClick: () => {
+            handleCancel();
+            setShowCreate(true);
+          },
           icon: <Plus className="w-4 h-4" />
         }}
       />
 
       {showCreate && (
         <form onSubmit={handleSubmit} className="bg-card border rounded-xl p-6 shadow-sm space-y-4 max-w-2xl">
-          <h2 className="text-sm font-extrabold uppercase tracking-wide border-b pb-2">Create New Subscription Plan</h2>
+          <h2 className="text-sm font-extrabold uppercase tracking-wide border-b pb-2">
+            {editId ? "Edit Subscription Plan" : "Create New Subscription Plan"}
+          </h2>
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-muted-foreground uppercase">Plan Name</label>
@@ -2268,8 +2375,10 @@ const SubscriptionPlansPage: React.FC = () => {
             </div>
           </div>
           <div className="border-t pt-4 flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button type="submit">Publish Pricing Plan</Button>
+            <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
+            <Button type="submit">
+              {editId ? "Update Pricing Plan" : "Publish Pricing Plan"}
+            </Button>
           </div>
         </form>
       )}
@@ -2305,7 +2414,7 @@ const SubscriptionPlansPage: React.FC = () => {
               </div>
             </div>
             <div className="pt-6 border-t mt-6">
-              <Button variant="outline" className="w-full font-bold text-xs">Edit Plan Details</Button>
+              <Button variant="outline" onClick={() => handleEditClick(p)} className="w-full font-bold text-xs">Edit Plan Details</Button>
             </div>
           </div>
         ))}
