@@ -19,6 +19,7 @@ export const DocsAllPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'owner' | 'tenant'>('all');
 
   const { data: docs = [], isLoading } = useQuery({ queryKey: ['docs-all'], queryFn: () => api.documents.getAll() });
 
@@ -30,7 +31,17 @@ export const DocsAllPage: React.FC = () => {
   const filtered = docs.filter((d) => {
     const nameMatch = d.name.toLowerCase().includes(searchQuery.toLowerCase());
     const catMatch = categoryFilter === '' || d.category === categoryFilter;
-    return nameMatch && catMatch;
+    
+    let roleMatch = true;
+    if (roleFilter === 'owner') {
+      const ownerCats = ['Statement', 'Tax', 'Insurance', 'Contract', 'Financial', 'Inspection'];
+      roleMatch = ownerCats.includes(d.category) || d.name.toLowerCase().includes('owner') || d.name.toLowerCase().includes('statement') || d.name.toLowerCase().includes('tax');
+    } else if (roleFilter === 'tenant') {
+      const tenantCats = ['Lease', 'Invoice', 'Receipt', 'Identification', 'Maintenance', 'Legal'];
+      roleMatch = tenantCats.includes(d.category) || d.name.toLowerCase().includes('tenant') || d.name.toLowerCase().includes('lease') || d.name.toLowerCase().includes('invoice') || d.name.toLowerCase().includes('receipt');
+    }
+
+    return nameMatch && catMatch && roleMatch;
   });
 
   const columns: ColumnDef<any>[] = [
@@ -66,6 +77,34 @@ export const DocsAllPage: React.FC = () => {
         breadcrumbs={[{ label: 'Documents', href: '/documents' }, { label: 'All Documents' }]}
         action={{ label: 'Upload Document', onClick: () => navigate({ to: '/documents/upload' }), icon: <Upload className="w-4 h-4" /> }}
       />
+
+      {/* Role Filters */}
+      <div className="flex gap-2 p-1 bg-secondary/15 border rounded-2xl w-fit mb-4">
+        <button
+          onClick={() => setRoleFilter('all')}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            roleFilter === 'all' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-secondary text-muted-foreground'
+          }`}
+        >
+          All Documents
+        </button>
+        <button
+          onClick={() => setRoleFilter('owner')}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            roleFilter === 'owner' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-secondary text-muted-foreground'
+          }`}
+        >
+          Owner Documents
+        </button>
+        <button
+          onClick={() => setRoleFilter('tenant')}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            roleFilter === 'tenant' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-secondary text-muted-foreground'
+          }`}
+        >
+          Tenant Documents
+        </button>
+      </div>
 
       <div className="flex items-start gap-2 flex-wrap">
         <div className="flex-1">
