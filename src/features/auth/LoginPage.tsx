@@ -178,6 +178,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
           </div>
         </div>
       </form>
+      <div className="text-center pt-2">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="text-xs font-bold text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors duration-200"
+        >
+          ← Back to Landing Page
+        </button>
+      </div>
     </div>
   );
 };

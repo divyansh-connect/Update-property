@@ -162,9 +162,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
       {/* Interactive Tabs Features Section */}
       <section id="features" className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200/80 dark:border-white/5 space-y-12">
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">Full-Stack SaaS Architecture</h2>
-          <p className="text-slate-505 dark:text-slate-400 text-sm font-semibold">
-            A comprehensive backend-abstracted UI platform structured to scale operational boundaries.
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">All-in-One PropTech Feature Matrix</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold">
+            Everything you need to manage, scale, and automate your entire real estate portfolio.
           </p>
         </div>
 
@@ -181,7 +181,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
               className={`flex items-center gap-2 px-4 py-2 text-xs font-bold transition border-b-2 -mb-2 shrink-0 ${
                 activeTab === tab.key 
                   ? 'border-primary text-primary dark:text-white bg-primary/5' 
-                  : 'border-transparent text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               {tab.icon}
@@ -269,6 +269,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
             </>
           )}
         </div>
+
+        {/* 18 Features Grid */}
+        <div className="pt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 text-left">
+          {[
+            { title: "1. Executive Dashboard", desc: "Detailed portfolio performance charts, vacancy rates, and real-time financial tracking metrics." },
+            { title: "2. Property Profiles", desc: "Support for apartments, commercial units, HOA, single & multi-family properties." },
+            { title: "3. Unit Inventory", desc: "Detailed bed/bath square footage logs, availability status trackers, and rental settings." },
+            { title: "4. Tenant Profiles", desc: "Centralized lease history, payment ledgers, messaging logs, and compliance records." },
+            { title: "5. Online Applications", desc: "Track leads, collect dynamic applications, and handle background check integrations." },
+            { title: "6. Rent Collection", desc: "Automate payments, ACH/Credit Card processing, late fee rules, and receipt generation." },
+            { title: "7. Accounting Suite", desc: "Profit & Loss sheets, trust accounting rules, chart of accounts, and bank reconciliation." },
+            { title: "8. Maintenance Flow", desc: "From tenant submission to manager approval, vendor dispatching, and payments." },
+            { title: "9. Vendor Directory", desc: "Database of certified contractors, service agreements, billing history, and dispatch records." },
+            { title: "10. Owner Portal", desc: "Self-service dashboard for performance logs, automated reports, and direct payouts." },
+            { title: "11. Lead CRM Pipeline", desc: "Nurture leasing prospects from showing appointments up to lease signatures." },
+            { title: "12. Communications Hub", desc: "Unified inbox for SMS alerts, recurring email notifications, and system announcements." },
+            { title: "13. Document Hub", desc: "Securely store templates, lease agreements, check-out forms, and e-signatures." },
+            { title: "14. Inspection Manager", desc: "Checklists, condition photo attachments, and move-in/move-out reports." },
+            { title: "15. Custom Reports", desc: "Pre-built financial templates, delinquency reports, and scheduled exports." },
+            { title: "16. Mobile Portals", desc: "Fully responsive layouts for property managers, tenants, and owners on the go." },
+            { title: "17. AI Assistant Suite", desc: "AI-driven maintenance agent, accounting interpreter, and ROI analyst." },
+            { title: "18. System Settings", desc: "Flexible user roles, RBAC configurations, API endpoints, webhooks, and audit logs." }
+          ].map((f, i) => (
+            <div key={i} className="p-5 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl space-y-2 hover:border-primary/30 transition duration-300">
+              <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                {f.title}
+              </h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{f.desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ROI Savings Calculator */}
@@ -351,7 +383,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
                 </ul>
               </div>
               <Button onClick={() => navigate('/login')} className="w-full mt-8 bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-slate-800 dark:text-white font-bold h-10 text-xs rounded-xl transition">
-                Select Plan
+                Buy Now
               </Button>
             </div>
           ))}
