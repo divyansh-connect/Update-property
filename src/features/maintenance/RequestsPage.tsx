@@ -30,7 +30,9 @@ export const RequestsPage: React.FC = () => {
   });
 
   const filteredRequests = requests.filter((r) => {
-    const searchMatch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.tenantName.toLowerCase().includes(searchQuery.toLowerCase());
+    const titleVal = r.title || '';
+    const tenantVal = r.tenantName || '';
+    const searchMatch = titleVal.toLowerCase().includes(searchQuery.toLowerCase()) || tenantVal.toLowerCase().includes(searchQuery.toLowerCase());
     const prioMatch = priorityFilter === '' || r.priority === priorityFilter;
     const statusMatch = statusFilter === '' || r.status === statusFilter;
     return searchMatch && prioMatch && statusMatch;

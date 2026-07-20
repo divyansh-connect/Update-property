@@ -1592,7 +1592,7 @@ export const mockApi = {
         remainingBalance: 0,
         createdBy: 'Manager',
       };
-      rentPayments.push(newPay);
+      rentPayments.unshift(newPay);
       return newPay;
     },
     update: async (id: string, data: any) => {
@@ -1640,7 +1640,7 @@ export const mockApi = {
         balance: data.amount,
         status: 'Sent',
       };
-      invoices.push(newInv);
+      invoices.unshift(newInv);
       return newInv;
     },
     update: async (id: string, data: any) => {
@@ -2308,7 +2308,7 @@ export const mockApi = {
         responseTime: '2h',
         status: 'Active',
       };
-      vendors.push(newVendor);
+      vendors.unshift(newVendor);
       return newVendor;
     },
     update: async (id: string, data: any) => {
