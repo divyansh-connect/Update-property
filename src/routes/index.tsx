@@ -270,34 +270,16 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
 
   const isOwnerPath = location.pathname === '/owner' || location.pathname.startsWith('/owner/');
   const isTenantPath = location.pathname === '/tenant' || location.pathname.startsWith('/tenant/');
-  const isSuperAdminPath = 
-    location.pathname.startsWith('/companies') || 
-    location.pathname.startsWith('/subscriptions') || 
-    location.pathname.startsWith('/platform-users') || 
-    location.pathname.startsWith('/support') || 
-    location.pathname.startsWith('/platform-settings') || 
-    location.pathname.startsWith('/platform-integrations') || 
-    location.pathname.startsWith('/platform-security') || 
-    location.pathname.startsWith('/platform-analytics');
-
-  const isManagerPath = !isOwnerPath && !isTenantPath && !isSuperAdminPath && location.pathname !== '/';
+  const isIntegrationsPath = 
+    location.pathname.startsWith('/admin/integrations') || 
+    location.pathname.startsWith('/platform-integrations');
 
   // Role Access Guard
   let hasAccess = true;
-  if (user?.role === 'Super Admin') {
-    if (isOwnerPath || isTenantPath || isManagerPath) {
+  if (!isIntegrationsPath) {
+    if (user?.role === 'Owner' && !isOwnerPath) {
       hasAccess = false;
-    }
-  } else if (user?.role === 'Property Manager') {
-    if (isOwnerPath || isTenantPath || isSuperAdminPath) {
-      hasAccess = false;
-    }
-  } else if (user?.role === 'Owner') {
-    if (!isOwnerPath) {
-      hasAccess = false;
-    }
-  } else if (user?.role === 'Tenant') {
-    if (!isTenantPath) {
+    } else if (user?.role === 'Tenant' && !isTenantPath) {
       hasAccess = false;
     }
   }
