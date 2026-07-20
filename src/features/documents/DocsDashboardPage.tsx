@@ -5,7 +5,6 @@ import api from '../../api';
 import { PageHeader } from '../../components/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { StorageUsageCard } from '../../components/DocumentComponents';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { FileText, Clock, Share2, Archive, AlertTriangle, Upload, FolderPlus, PenLine } from 'lucide-react';
 
@@ -31,7 +30,7 @@ export const DocsDashboardPage: React.FC = () => {
     <div className="space-y-6 text-foreground">
       <PageHeader
         title="Document Management Dashboard"
-        description="Verify storage usage, signature requests, expiring documents, and recently shared files."
+        description="Overview of signature requests, expiring documents, recently shared files, and active templates."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documents' }]}
       />
 
@@ -55,11 +54,6 @@ export const DocsDashboardPage: React.FC = () => {
             </div>
           </Card>
         ))}
-      </div>
-
-      {/* Storage Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StorageUsageCard used={metrics.storageUsed} total="100 GB" percentage={43} />
       </div>
     </div>
   );

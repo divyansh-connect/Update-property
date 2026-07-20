@@ -75,10 +75,15 @@ export const TenantPaymentsPage: React.FC = () => {
         <Card className="md:col-span-2 p-5 border bg-card flex justify-between items-center text-xs font-semibold">
           <div>
             <h4 className="font-extrabold uppercase text-muted-foreground text-[10px]">Outstanding balance due</h4>
-            <p className="text-3xl font-black mt-2 text-primary">$0.00</p>
+            <p className="text-3xl font-black mt-2 text-emerald-500 flex items-center gap-1.5">
+              $0.00
+              <CheckCircle className="w-5 h-5 text-emerald-500" />
+            </p>
             <p className="text-[10px] text-muted-foreground mt-1">Next rent period invoices generate on August 1st.</p>
           </div>
-          <Button onClick={() => setIsOpen(true)}>Pay Outstanding Balance</Button>
+          <Button disabled variant="outline" className="border-slate-200 dark:border-white/10 text-muted-foreground bg-transparent">
+            No Balance Due
+          </Button>
         </Card>
 
         {/* Autopay status card */}

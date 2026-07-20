@@ -176,6 +176,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       submenu: [
         { title: 'Company Profile', path: '/admin/company-settings' },
         { title: 'Users & Roles', path: '/admin/users' },
+        { title: 'Integrations Marketplace', path: '/admin/integrations' },
+        { title: 'Connected Apps (QuickBooks)', path: '/platform-integrations/connected' },
       ],
     },
   ];

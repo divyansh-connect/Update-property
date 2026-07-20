@@ -1456,6 +1456,8 @@ rptForecasts = [
   { period: 'Dec 2026', forecast: 40000, lower: 35000, upper: 45000 },
 ];
 
+let addedOwnerProps: any[] = [];
+
 let usersList = [
   { id: 'usr-1', name: 'John Doe', email: 'john@apex.com', role: 'Super Admin', team: 'Property Management', status: 'Active', lastLogin: '2026-07-19 09:30' },
   { id: 'usr-2', name: 'Jane Smith', email: 'jane@apex.com', role: 'Accountant', team: 'Accounting', status: 'Active', lastLogin: '2026-07-18 17:45' },
@@ -2519,9 +2521,37 @@ export const mockApi = {
     }
   },
 
+
   ownerProperties: {
-    getAll: async () => { await delay(150); return [...properties].slice(0, 4); },
-    getById: async (id: string) => { await delay(50); return properties.find(p => p.id === id); },
+    getAll: async () => {
+      await delay(150);
+      return [...addedOwnerProps, ...properties.slice(0, 4)];
+    },
+    getById: async (id: string) => {
+      await delay(50);
+      return [...addedOwnerProps, ...properties].find(p => p.id === id);
+    },
+    create: async (data: any) => {
+      await delay(200);
+      const newProp = {
+        id: `prop-owner-${addedOwnerProps.length + 1}`,
+        name: data.name,
+        address: data.address || '100 Main St, Austin, TX',
+        type: data.type || 'Apartment',
+        monthlyRent: data.monthlyRent || 2400,
+        status: 'Active',
+      };
+      addedOwnerProps.unshift(newProp);
+      properties.unshift(newProp as any);
+      return newProp;
+    },
+    delete: async (id: string) => {
+      await delay(150);
+      addedOwnerProps = addedOwnerProps.filter(p => p.id !== id);
+      const pIdx = properties.findIndex(p => p.id === id);
+      if (pIdx !== -1) properties.splice(pIdx, 1);
+      return true;
+    }
   },
 
 
@@ -2531,6 +2561,18 @@ export const mockApi = {
 
   ownerDocuments: {
     getAll: async () => { await delay(150); return [...ownerDocumentsList]; },
+    upload: async (data: any) => {
+      await delay(200);
+      const newDoc = {
+        id: `odoc-${ownerDocumentsList.length + 1}`,
+        name: data.name,
+        category: data.category || 'Statements',
+        uploadedAt: new Date().toISOString().split('T')[0],
+        size: data.size || '220 KB',
+      };
+      ownerDocumentsList.unshift(newDoc);
+      return newDoc as any;
+    }
   },
 
   ownerMaintenance: {
@@ -2650,6 +2692,18 @@ export const mockApi = {
 
   tenantDocuments: {
     getAll: async () => { await delay(100); return [...tenantDocumentsList].slice(0, 50); },
+    upload: async (data: any) => {
+      await delay(200);
+      const newDoc = {
+        id: `tdoc-${tenantDocumentsList.length + 1}`,
+        name: data.name,
+        category: data.category || 'Lease',
+        uploadedAt: new Date().toISOString().split('T')[0],
+        size: data.size || '150 KB',
+      };
+      tenantDocumentsList.unshift(newDoc);
+      return newDoc;
+    }
   },
 
   tenantMessages: {
