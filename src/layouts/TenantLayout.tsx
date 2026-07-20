@@ -41,7 +41,6 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
     { title: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/tenant' },
     { title: 'Lease', icon: <BookOpen className="w-5 h-5" />, path: '/tenant/lease' },
     { title: 'Payments', icon: <CreditCard className="w-5 h-5" />, path: '/tenant/payments' },
-    { title: 'Payment History', icon: <CreditCard className="w-5 h-5" />, path: '/tenant/payments/history' },
     { title: 'Maintenance', icon: <Wrench className="w-5 h-5" />, path: '/tenant/maintenance' },
     { title: 'Documents', icon: <FileText className="w-5 h-5" />, path: '/tenant/documents' },
     { title: 'Messages', icon: <UserCheck className="w-5 h-5" />, path: '/tenant/messages' },

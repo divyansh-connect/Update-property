@@ -2561,6 +2561,18 @@ export const mockApi = {
 
   ownerDocuments: {
     getAll: async () => { await delay(150); return [...ownerDocumentsList]; },
+    upload: async (data: any) => {
+      await delay(200);
+      const newDoc = {
+        id: `odoc-${ownerDocumentsList.length + 1}`,
+        name: data.name,
+        category: data.category || 'Statements',
+        uploadedAt: new Date().toISOString().split('T')[0],
+        size: data.size || '220 KB',
+      };
+      ownerDocumentsList.unshift(newDoc);
+      return newDoc as any;
+    }
   },
 
   ownerMaintenance: {
@@ -2680,6 +2692,18 @@ export const mockApi = {
 
   tenantDocuments: {
     getAll: async () => { await delay(100); return [...tenantDocumentsList].slice(0, 50); },
+    upload: async (data: any) => {
+      await delay(200);
+      const newDoc = {
+        id: `tdoc-${tenantDocumentsList.length + 1}`,
+        name: data.name,
+        category: data.category || 'Lease',
+        uploadedAt: new Date().toISOString().split('T')[0],
+        size: data.size || '150 KB',
+      };
+      tenantDocumentsList.unshift(newDoc);
+      return newDoc;
+    }
   },
 
   tenantMessages: {
