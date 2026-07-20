@@ -1527,7 +1527,7 @@ export const mockApi = {
     create: async (data: any) => {
       await delay(200);
       const newTen = { ...data, id: `ten-${tenants.length + 1}` };
-      tenants.push(newTen);
+      tenants.unshift(newTen);
       return newTen;
     },
     update: async (id: string, data: any) => {
@@ -1551,20 +1551,32 @@ export const mockApi = {
     createApplication: async (data: any) => {
       await delay(200);
       const newApp = { ...data, id: `app-gen-${applications.length + 1}`, status: 'Pending', submittedDate: new Date().toISOString().split('T')[0] };
-      applications.push(newApp);
+      applications.unshift(newApp);
       return newApp;
+    },
+    updateApplication: async (id: string, data: any) => {
+      await delay(200);
+      const idx = applications.findIndex(a => a.id === id);
+      if (idx !== -1) applications[idx] = { ...applications[idx], ...data };
+      return applications[idx];
     },
     getLeases: async () => { await delay(150); return [...leases]; },
     createLease: async (data: any) => {
       await delay(250);
       const newLease = { ...data, id: `lease-${leases.length + 1}`, status: 'Active' };
-      leases.push(newLease);
+      leases.unshift(newLease);
       // toggle unit
       const uIdx = units.findIndex(u => u.id === data.unitId);
       if (uIdx !== -1) {
         units[uIdx].status = 'Occupied';
       }
       return newLease;
+    },
+    updateLease: async (id: string, data: any) => {
+      await delay(200);
+      const idx = leases.findIndex(l => l.id === id);
+      if (idx !== -1) leases[idx] = { ...leases[idx], ...data };
+      return leases[idx];
     },
     getRenewals: async () => { await delay(100); return [...renewals]; }
   },
@@ -2003,8 +2015,13 @@ export const mockApi = {
     getAll: async () => { await delay(100); return [...coaAccounts]; },
     create: async (data: any) => {
       await delay(200);
-      const newAcc = { ...data, id: `coa-${coaAccounts.length + 1}`, balance: 0, status: 'Active' };
-      coaAccounts.push(newAcc);
+      const newAcc = { 
+        ...data, 
+        id: `coa-${coaAccounts.length + 1}`, 
+        balance: data.balance !== undefined ? data.balance : 0, 
+        status: 'Active' 
+      };
+      coaAccounts.unshift(newAcc);
       return newAcc;
     },
     update: async (id: string, data: any) => {

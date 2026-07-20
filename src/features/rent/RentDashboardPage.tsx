@@ -91,11 +91,8 @@ export const RentDashboardPage: React.FC = () => {
         <Button size="sm" variant="outline" onClick={() => navigate({ to: '/invoices/new' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Create Invoice
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/charges' })} className="flex items-center gap-1">
-          <Plus className="w-4 h-4" /> Add Charge
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/payment-plans/new' })} className="flex items-center gap-1">
-          <Plus className="w-4 h-4" /> Create Plan
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/rent-ledger' })} className="flex items-center gap-1">
+          <Plus className="w-4 h-4" /> Rent Ledger
         </Button>
       </div>
 

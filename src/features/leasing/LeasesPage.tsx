@@ -37,7 +37,7 @@ export const LeasesPage: React.FC = () => {
   const terminateMutation = useMutation({
     // simple state update simulation
     mutationFn: async (id: string) => {
-      return api.leasing.createLease({ id, status: 'Terminated' });
+      return api.leasing.updateLease(id, { status: 'Terminated' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leases'] });
@@ -47,8 +47,10 @@ export const LeasesPage: React.FC = () => {
 
   // Filter Logic
   const filteredLeases = leases.filter((l) => {
-    const tenantMatch = l.tenantName.toLowerCase().includes(searchQuery.toLowerCase());
-    const leaseIdMatch = l.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const tenantVal = l.tenantName || '';
+    const idVal = l.id || '';
+    const tenantMatch = tenantVal.toLowerCase().includes(searchQuery.toLowerCase());
+    const leaseIdMatch = idVal.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesProp = propertyFilter === '' || l.propertyId === propertyFilter;
     const matchesStatus = statusFilter === '' || l.status === statusFilter;
     return (tenantMatch || leaseIdMatch) && matchesProp && matchesStatus;

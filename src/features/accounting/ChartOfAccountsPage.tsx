@@ -27,7 +27,7 @@ export const ChartOfAccountsPage: React.FC = () => {
   // Form states
   const [number, setNumber] = useState('');
   const [name, setName] = useState('');
-  const [type, setType] = useState<'Assets' | 'Liabilities' | 'Equity' | 'Income' | 'Expenses'>('Assets');
+  const [type, setType] = useState<'Assets' | 'Liabilities' | 'Equity' | 'Income' | 'Expenses'>('Income');
   const [openingBalance, setOpeningBalance] = useState(0);
 
   // Queries
@@ -156,9 +156,6 @@ export const ChartOfAccountsPage: React.FC = () => {
           <div className="space-y-1">
             <label className="text-xs font-bold text-muted-foreground uppercase">Account Type</label>
             <Select value={type} onChange={(e: any) => setType(e.target.value)}>
-              <option value="Assets">Assets</option>
-              <option value="Liabilities">Liabilities</option>
-              <option value="Equity">Equity</option>
               <option value="Income">Income</option>
               <option value="Expenses">Expenses</option>
             </Select>
