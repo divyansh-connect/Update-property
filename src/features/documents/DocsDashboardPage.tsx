@@ -34,13 +34,7 @@ export const DocsDashboardPage: React.FC = () => {
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documents' }]}
       />
 
-      {/* Quick Actions */}
-      <div className="flex flex-wrap gap-2.5 p-3.5 bg-card border rounded-2xl">
-        <Button size="sm" onClick={() => navigate({ to: '/documents/upload' })} className="flex items-center gap-1.5"><Upload className="w-4 h-4" /> Upload Document</Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/documents/folders' })} className="flex items-center gap-1.5"><FolderPlus className="w-4 h-4" /> Create Folder</Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/documents/signatures' })} className="flex items-center gap-1.5"><PenLine className="w-4 h-4" /> Request Signature</Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/documents/templates' })} className="flex items-center gap-1.5"><FileText className="w-4 h-4" /> Create Template</Button>
-      </div>
+
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

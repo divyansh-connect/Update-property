@@ -109,9 +109,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     {
       title: 'Documents',
       icon: <FileText className="w-5 h-5" />,
-      path: '/documents',
+      path: '/documents/all',
       submenu: [
-        { title: 'Dashboard', path: '/documents' },
+        { title: 'All Documents', path: '/documents/all' },
         { title: 'e-Signatures', path: '/documents/signatures' },
       ],
     },
