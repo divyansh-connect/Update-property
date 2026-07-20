@@ -1456,6 +1456,12 @@ rptForecasts = [
   { period: 'Dec 2026', forecast: 40000, lower: 35000, upper: 45000 },
 ];
 
+let usersList = [
+  { id: 'usr-1', name: 'John Doe', email: 'john@apex.com', role: 'Super Admin', team: 'Property Management', status: 'Active', lastLogin: '2026-07-19 09:30' },
+  { id: 'usr-2', name: 'Jane Smith', email: 'jane@apex.com', role: 'Accountant', team: 'Accounting', status: 'Active', lastLogin: '2026-07-18 17:45' },
+  { id: 'usr-3', name: 'Bob Johnson', email: 'bob@apex.com', role: 'Leasing Agent', team: 'Leasing', status: 'Inactive', lastLogin: '2026-07-10 11:15' },
+];
+
 // --- Mock API Layer Object ---
 export const mockApi = {
   property: {
@@ -3766,18 +3772,23 @@ export const mockApi = {
   users: {
     getAll: async () => {
       await delay(100);
-      return [
-        { id: 'usr-1', name: 'John Doe', email: 'john@apex.com', role: 'Super Admin', team: 'Property Management', status: 'Active', lastLogin: '2026-07-19 09:30' },
-        { id: 'usr-2', name: 'Jane Smith', email: 'jane@apex.com', role: 'Accountant', team: 'Accounting', status: 'Active', lastLogin: '2026-07-18 17:45' },
-        { id: 'usr-3', name: 'Bob Johnson', email: 'bob@apex.com', role: 'Leasing Agent', team: 'Leasing', status: 'Inactive', lastLogin: '2026-07-10 11:15' },
-      ];
+      return [...usersList];
     },
     invite: async (data: any) => {
       await delay(200);
-      return { id: `usr-${Date.now()}`, ...data, status: 'Pending', lastLogin: '-' };
+      const newU = { id: `usr-${usersList.length + 1}`, ...data, status: 'Active', lastLogin: '-' };
+      usersList.unshift(newU);
+      return newU;
+    },
+    update: async (id: string, data: any) => {
+      await delay(100);
+      const idx = usersList.findIndex(u => u.id === id);
+      if (idx !== -1) usersList[idx] = { ...usersList[idx], ...data };
+      return usersList[idx];
     },
     delete: async (id: string) => {
       await delay(100);
+      usersList = usersList.filter(u => u.id !== id);
       return true;
     },
   },
