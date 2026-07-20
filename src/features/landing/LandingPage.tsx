@@ -3,7 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { 
   Sparkles, Building2, ShieldAlert, Cpu, Check, Users, ArrowRight, 
   MessageSquare, DollarSign, Database, Zap, ArrowUpRight, BarChart3, Shield,
-  Sun, Moon
+  Sun, Moon, Loader2
 } from 'lucide-react';
 import { useThemeStore } from '../../store/useStore';
 
@@ -15,6 +15,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
   const [rentVolume, setRentVolume] = useState(15000);
   const [activeTab, setActiveTab] = useState<'portals' | 'ai' | 'developers'>('portals');
   const { theme, toggleTheme } = useThemeStore();
+
+  const [selectedCheckoutPlan, setSelectedCheckoutPlan] = useState<{name: string, price: number} | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<'form' | 'loading' | 'success'>('form');
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCheckoutStep('loading');
+    setTimeout(() => {
+      setCheckoutStep('success');
+      setTimeout(() => {
+        setSelectedCheckoutPlan(null);
+        setCheckoutStep('form');
+        setCardName('');
+        setCardNumber('');
+        setCardExpiry('');
+        setCardCvv('');
+        navigate('/login');
+      }, 2000);
+    }, 2000);
+  };
 
   // Estimate SaaS savings
   const estimatedSavings = Math.round(rentVolume * 0.045);
@@ -382,7 +406,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
                   ))}
                 </ul>
               </div>
-              <Button onClick={() => navigate('/login')} className="w-full mt-8 bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-slate-800 dark:text-white font-bold h-10 text-xs rounded-xl transition">
+              <Button onClick={() => setSelectedCheckoutPlan({ name: tier.name, price: tier.price })} className="w-full mt-8 bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-slate-800 dark:text-white font-bold h-10 text-xs rounded-xl transition">
                 Buy Now
               </Button>
             </div>
@@ -470,6 +494,75 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
           </div>
         </div>
       </footer>
+      {selectedCheckoutPlan && (
+        <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 text-left text-xs font-semibold text-slate-800 dark:text-slate-200">
+            {checkoutStep === 'form' && (
+              <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <div>
+                    <h3 className="font-extrabold text-sm uppercase text-slate-900 dark:text-white">Secure Checkout</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Subscribe to DoorLoop / Zentrol Apex</p>
+                  </div>
+                  <button type="button" onClick={() => setSelectedCheckoutPlan(null)} className="text-slate-400 hover:text-slate-650 text-xl font-bold">&times;</button>
+                </div>
+
+                <div className="p-3.5 bg-primary/10 border border-primary/20 text-primary rounded-2xl flex justify-between items-center">
+                  <div>
+                    <p className="font-black text-sm uppercase">{selectedCheckoutPlan.name} Plan</p>
+                    <p className="text-[10px] text-slate-500">Auto-recurring billing</p>
+                  </div>
+                  <p className="font-black text-lg">${selectedCheckoutPlan.price}/mo</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-500">Cardholder Name</label>
+                  <input required placeholder="E.g., John Doe" value={cardName} onChange={e => setCardName(e.target.value)} className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-950 focus:ring-1 focus:ring-primary focus:outline-none" />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-500">Card Number</label>
+                  <input required placeholder="4111 2222 3333 4444" value={cardNumber} onChange={e => setCardNumber(e.target.value)} className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-950 focus:ring-1 focus:ring-primary focus:outline-none" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-500">Expiry Date</label>
+                    <input required placeholder="MM/YY" value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-950 focus:ring-1 focus:ring-primary focus:outline-none" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-500">CVV</label>
+                    <input required placeholder="123" type="password" value={cardCvv} onChange={e => setCardCvv(e.target.value)} className="w-full text-xs font-semibold p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-950 focus:ring-1 focus:ring-primary focus:outline-none" />
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setSelectedCheckoutPlan(null)}>Cancel</Button>
+                  <Button type="submit" className="bg-primary hover:bg-primary/95 text-white font-bold h-10 px-4 rounded-xl">Pay & Subscribe</Button>
+                </div>
+              </form>
+            )}
+
+            {checkoutStep === 'loading' && (
+              <div className="py-12 flex flex-col items-center justify-center space-y-4 text-center">
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                <p className="font-bold text-sm text-slate-900 dark:text-white">Processing Card Payment...</p>
+                <p className="text-[10px] text-muted-foreground">Verifying 3D Secure credentials</p>
+              </div>
+            )}
+
+            {checkoutStep === 'success' && (
+              <div className="py-12 flex flex-col items-center justify-center space-y-4 text-center">
+                <div className="w-12 h-12 bg-emerald-500/15 text-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                  <Check className="w-6 h-6 stroke-[3]" />
+                </div>
+                <p className="font-black text-base text-emerald-500">Payment Successful!</p>
+                <p className="text-[11px] text-muted-foreground font-semibold">Your SaaS instance is ready. Redirecting to Portals...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

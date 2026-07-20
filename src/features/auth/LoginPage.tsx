@@ -54,6 +54,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
 
   return (
     <div className="space-y-6 text-slate-900 dark:text-white">
+      <div className="flex justify-start">
+        <button
+          type="button"
+          onClick={() => navigate('/landing')}
+          className="text-xs font-bold text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors duration-200 flex items-center gap-1"
+        >
+          ← Back
+        </button>
+      </div>
+
       <div className="text-center">
         <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Access Gate</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sign in to begin lease simulations</p>
@@ -178,15 +188,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
           </div>
         </div>
       </form>
-      <div className="text-center pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="text-xs font-bold text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors duration-200"
-        >
-          ← Back to Landing Page
-        </button>
-      </div>
     </div>
   );
 };

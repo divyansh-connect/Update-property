@@ -36,7 +36,7 @@ export const ApplicationsPage: React.FC = () => {
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
       // update status in mock API
-      return api.leasing.createApplication({ id, status: 'Approved' });
+      return api.leasing.updateApplication(id, { status: 'Approved' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
@@ -46,7 +46,7 @@ export const ApplicationsPage: React.FC = () => {
 
   const rejectMutation = useMutation({
     mutationFn: async (id: string) => {
-      return api.leasing.createApplication({ id, status: 'Rejected' });
+      return api.leasing.updateApplication(id, { status: 'Rejected' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
@@ -55,7 +55,8 @@ export const ApplicationsPage: React.FC = () => {
   });
 
   const filteredApps = apps.filter((app) => {
-    const nameMatch = app.tenantName.toLowerCase().includes(searchQuery.toLowerCase());
+    const nameVal = app.tenantName || '';
+    const nameMatch = nameVal.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === '' || app.status === statusFilter;
     return nameMatch && matchesStatus;
   });

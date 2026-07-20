@@ -107,6 +107,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       ],
     },
     {
+      title: 'Documents',
+      icon: <FileText className="w-5 h-5" />,
+      path: '/documents',
+      submenu: [
+        { title: 'Dashboard', path: '/documents' },
+        { title: 'e-Signatures', path: '/documents/signatures' },
+      ],
+    },
+    {
       title: 'Owners',
       icon: <UserCheck className="w-5 h-5" />,
       path: '/owners',
