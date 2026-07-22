@@ -64,7 +64,7 @@ export const SuperAdminDashboardPage: React.FC = () => {
       />
 
       {/* --- SaaS STATS GRID --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Active Companies"
           value={metrics.activeCompanies}
@@ -96,14 +96,6 @@ export const SuperAdminDashboardPage: React.FC = () => {
           trend="up"
           trendLabel="98.5%"
           description="retention rate"
-        />
-        <StatsCard
-          title="Global Storage"
-          value={metrics.storageUsage}
-          icon={<AlertCircle className="w-5 h-5" />}
-          trend="neutral"
-          trendLabel="42% full"
-          description="10 TB limit"
         />
       </div>
 

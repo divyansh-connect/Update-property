@@ -28,7 +28,6 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
   const { theme, toggleTheme } = useThemeStore();
   const { notifications, markAsRead } = useNotificationStore();
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -48,17 +47,11 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
     <div className="flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-300">
       
       {/* SIDEBAR FOR DESKTOP */}
-      <aside className={clsx(
-        'hidden md:flex flex-col border-r bg-card text-card-foreground shrink-0 transition-all duration-300',
-        isSidebarOpen ? 'w-64' : 'w-20'
-      )}>
-        <div className="h-16 flex items-center justify-between px-4 border-b">
-          <span className={clsx('font-black text-lg text-primary truncate', !isSidebarOpen && 'hidden')}>
+      <aside className="hidden md:flex flex-col border-r bg-card text-card-foreground shrink-0 w-64">
+        <div className="h-16 flex items-center px-6 border-b">
+          <span className="font-black text-lg text-primary truncate">
             Staff Portal
           </span>
-          <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <Menu className="w-5 h-5" />
-          </Button>
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
@@ -74,11 +67,22 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
                 )}
               >
                 {item.icon}
-                {isSidebarOpen && <span>{item.title}</span>}
+                <span>{item.title}</span>
               </button>
             );
           })}
         </nav>
+
+        {/* Desktop Logout Button */}
+        <div className="p-4 border-t border-border/40">
+          <button
+            onClick={logout}
+            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all uppercase tracking-wider text-rose-500 hover:bg-rose-500/10 transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Log Out</span>
+          </button>
+        </div>
       </aside>
 
       {/* MOBILE SIDEBAR DRAWER (SHEET) */}
@@ -113,6 +117,16 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
                 );
               })}
             </nav>
+            {/* Mobile Logout Button */}
+            <div className="pt-4 border-t border-border/40 mt-5">
+              <button
+                onClick={logout}
+                className="w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-xs font-bold transition-all uppercase tracking-wider text-rose-500 hover:bg-rose-500/10 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

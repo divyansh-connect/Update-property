@@ -332,13 +332,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           })}
         </nav>
 
-        {/* Desktop Sidebar Footer */}
+        {/* Desktop Sidebar Footer - Logout */}
         <div className="p-4 border-t border-border/60">
           <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="w-full flex items-center justify-center p-2 rounded-lg bg-secondary/60 hover:bg-secondary border border-border/40 text-muted-foreground hover:text-foreground transition-all"
+            onClick={logout}
+            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-rose-500 hover:bg-rose-500/10 transition-all uppercase tracking-wider"
           >
-            {isSidebarOpen ? 'Collapse Menu' : '→'}
+            <LogOut className="w-5 h-5" />
+            {isSidebarOpen && <span>Log Out</span>}
           </button>
         </div>
       </aside>
@@ -409,6 +410,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 );
               })}
             </nav>
+            {/* Mobile Logout Button */}
+            <div className="pt-4 border-t border-border mt-4">
+              <button
+                onClick={logout}
+                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors uppercase tracking-wider"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
