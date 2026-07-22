@@ -1,69 +1,96 @@
 import React from 'react';
 import { Card } from '../../../components/ui/Card';
-import { Button } from '../../../components/ui/Button';
 
 interface PermissionMatrixProps {
-  roles: any[];
-  permissionGroups: any[];
-  onToggle: (roleId: string, permissionKey: string) => void;
+  role: {
+    id: string;
+    name: string;
+    description: string;
+    permissions: Array<{
+      module: string;
+      view: boolean;
+      create: boolean;
+      edit: boolean;
+      delete: boolean;
+      approve: boolean;
+      export: boolean;
+    }>;
+  };
+  onToggle: (module: string, action: 'view' | 'create' | 'edit' | 'delete' | 'approve' | 'export', checked: boolean) => void;
 }
 
-export const PermissionMatrix: React.FC<PermissionMatrixProps> = ({
-  roles,
-  permissionGroups,
-  onToggle,
-}) => {
+export const PermissionMatrix: React.FC<PermissionMatrixProps> = ({ role, onToggle }) => {
+  const actions: Array<'view' | 'create' | 'edit' | 'delete' | 'approve' | 'export'> = [
+    'view',
+    'create',
+    'edit',
+    'delete',
+    'approve',
+    'export',
+  ];
+
+  const getModulesForRole = (roleName: string) => {
+    const name = roleName.toLowerCase();
+    if (name.includes('owner')) {
+      return ['Dashboard', 'Properties', 'Financials', 'Statements', 'Distributions', 'Maintenance', 'Documents', 'Reports', 'Messages', 'Profile'];
+    }
+    if (name.includes('tenant')) {
+      return ['Dashboard', 'Lease', 'Payments', 'Maintenance', 'Documents', 'Messages', 'Notifications', 'Profile'];
+    }
+    if (name.includes('maintenance') || name.includes('staff') || name.includes('maint')) {
+      return ['Dashboard'];
+    }
+    return [
+      'Dashboard', 'Properties', 'Leasing', 'Tenants', 'Documents', 
+      'Owners', 'Rent & Payments', 'Accounting', 'Maintenance', 
+      'Reports', 'Communication', 'Company Settings', 'AI Assistant'
+    ];
+  };
+
+  const allowedModules = getModulesForRole(role.name);
+  const filteredPermissions = role.permissions.filter(p => allowedModules.includes(p.module));
+
   return (
     <Card className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-      <div className="p-4 border-b border-border bg-muted/15 flex justify-between items-center">
-        <h4 className="font-bold text-xs text-muted-foreground uppercase tracking-widest">
-          Roles & Permissions Matrix
+      <div className="p-4 border-b border-border bg-muted/15">
+        <h4 className="font-extrabold text-xs text-primary uppercase tracking-widest">
+          Permission Scope Matrix: {role.name}
         </h4>
-        <Button size="sm" variant="outline" onClick={() => alert('Bulk permissions synchronized')} className="text-[10px] font-semibold h-7 px-2">
-          Sync Permissions
-        </Button>
+        <p className="text-[10px] text-muted-foreground mt-0.5 font-semibold">
+          Configure module accessibility privileges and functional operation authorizations.
+        </p>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-secondary/30 text-muted-foreground uppercase font-bold border-b border-border">
+        <table className="w-full text-left text-xs font-semibold">
+          <thead className="bg-secondary/40 text-muted-foreground uppercase border-b border-border">
             <tr>
-              <th className="p-3">Permission Block</th>
-              {roles.map((r) => (
-                <th key={r.id} className="p-3 text-center min-w-[120px]">
-                  {r.name}
+              <th className="p-3">Module Name</th>
+              {actions.map((act) => (
+                <th key={act} className="p-3 text-center uppercase tracking-wider text-[10px] font-extrabold">
+                  {act}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border font-medium">
-            {permissionGroups.map((group) => (
-              <React.Fragment key={group.group}>
-                <tr className="bg-secondary/10">
-                  <td colSpan={roles.length + 1} className="p-2.5 font-black text-[10px] uppercase text-primary/80 tracking-widest">
-                    {group.group}
-                  </td>
-                </tr>
-                {group.items.map((item: any) => (
-                  <tr key={item.key} className="hover:bg-secondary/5 transition">
-                    <td className="p-3 text-foreground font-bold pl-6">{item.name}</td>
-                    {roles.map((role) => {
-                      const hasPerm = role.permissions.includes('all') || role.permissions.includes(item.key);
-                      return (
-                        <td key={role.id} className="p-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={hasPerm}
-                            disabled={role.permissions.includes('all')}
-                            onChange={() => onToggle(role.id, item.key)}
-                            className="rounded border-border text-primary focus:ring-primary h-4 w-4 disabled:opacity-50 cursor-pointer"
-                          />
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </React.Fragment>
+          <tbody className="divide-y divide-border text-foreground">
+            {filteredPermissions.map((p) => (
+              <tr key={p.module} className="hover:bg-secondary/5 transition">
+                <td className="p-3 font-bold">{p.module}</td>
+                {actions.map((act) => {
+                  const val = p[act];
+                  return (
+                    <td key={act} className="p-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={val}
+                        onChange={(e) => onToggle(p.module, act, e.target.checked)}
+                        className="rounded border-border text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
             ))}
           </tbody>
         </table>
@@ -71,4 +98,5 @@ export const PermissionMatrix: React.FC<PermissionMatrixProps> = ({
     </Card>
   );
 };
+
 export default PermissionMatrix;

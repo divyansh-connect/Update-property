@@ -7,6 +7,8 @@ import {
   useLocation 
 } from '@tanstack/react-router';
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../api';
 import { useAuthStore } from '../store/useStore';
 import { 
   Plus, Search, Eye, Edit, Power, Ban, CheckCircle, XCircle, Lock, Settings, Key, 
@@ -251,6 +253,12 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { data: roles = [] } = useQuery({
+    queryKey: ['rbac-roles-list'],
+    queryFn: () => api.roles.getAll(),
+    enabled: isAuthenticated && !!user,
+  });
+
   React.useEffect(() => {
     if (!isAuthenticated) {
       navigate({ to: '/landing' });
@@ -288,6 +296,32 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
       hasAccess = false;
     } else if (user?.role === 'Maintenance Staff' && !isStaffPath) {
       hasAccess = false;
+    } else if (user?.role && user.role !== 'Super Admin' && user.role !== 'Property Manager') {
+      // Map pathname to module permissions
+      const getRequiredModule = (path: string): string => {
+        if (path.startsWith('/properties') || path.startsWith('/buildings') || path.startsWith('/units')) return 'Properties';
+        if (path.startsWith('/leasing')) return 'Leasing';
+        if (path.startsWith('/tenants')) return 'Tenants';
+        if (path.startsWith('/owners')) return 'Owners';
+        if (path.startsWith('/rent') || path.startsWith('/payments') || path.startsWith('/invoices') || path.startsWith('/rent-ledger')) return 'Rent & Payments';
+        if (path.startsWith('/accounting')) return 'Accounting';
+        if (path.startsWith('/maintenance') || path.startsWith('/inspections') || path.startsWith('/vendors')) return 'Maintenance';
+        if (path.startsWith('/reports')) return 'Reports';
+        if (path.startsWith('/communication')) return 'Communication';
+        if (path.startsWith('/admin') || path.startsWith('/platform-integrations')) return 'Company Settings';
+        return '';
+      };
+
+      const reqModule = getRequiredModule(location.pathname);
+      if (reqModule) {
+        const matchingRole = roles.find((r: any) => r.name.toLowerCase() === user.role.toLowerCase());
+        if (matchingRole) {
+          const permRule = matchingRole.permissions.find((p: any) => p.module === reqModule);
+          if (permRule && !permRule.view) {
+            hasAccess = false;
+          }
+        }
+      }
     }
   }
 
@@ -1700,6 +1734,42 @@ const adminTeamsRoute = createRoute({
   path: '/admin/teams',
   component: () => (<ProtectedWrapper><TeamsPage /></ProtectedWrapper>),
 });
+
+const AccessTemplatesPage: React.FC = () => {
+  return (
+    <div className="space-y-6 text-foreground">
+      <PageHeader
+        title="Access Templates"
+        description="Bootstrap your organizational permissions with pre-configured access templates."
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Administration' }, { label: 'Templates' }]}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-sm space-y-3">
+          <h3 className="font-extrabold text-sm text-primary">Standard Staff Access</h3>
+          <p className="text-xs text-muted-foreground font-semibold">Standard settings for front desk staff. Grants view-only rights to tenants and properties.</p>
+          <span className="inline-block px-2 py-0.5 bg-secondary text-[10px] font-extrabold rounded">6 Modules Enabled</span>
+        </div>
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-sm space-y-3">
+          <h3 className="font-extrabold text-sm text-primary">Full Financial Access</h3>
+          <p className="text-xs text-muted-foreground font-semibold">Tailored for external accountants. Enables comprehensive access to accounting and payments.</p>
+          <span className="inline-block px-2 py-0.5 bg-secondary text-[10px] font-extrabold rounded">3 Modules Enabled</span>
+        </div>
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-sm space-y-3">
+          <h3 className="font-extrabold text-sm text-primary">Maintenance Vendor Access</h3>
+          <p className="text-xs text-muted-foreground font-semibold">Minimal access scope. Grants technicians rights to view and update work orders only.</p>
+          <span className="inline-block px-2 py-0.5 bg-secondary text-[10px] font-extrabold rounded">1 Module Enabled</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const adminTemplatesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/templates',
+  component: () => (<ProtectedWrapper><AccessTemplatesPage /></ProtectedWrapper>),
+});
+
 const adminRolesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/roles',
@@ -4716,6 +4786,7 @@ const routeTree = rootRoute.addChildren([
   adminUsersRoute,
   adminTeamsRoute,
   adminRolesRoute,
+  adminTemplatesRoute,
   adminPropertiesSettingsRoute,
   adminFinancialRoute,
   adminPaymentSettingsRoute,

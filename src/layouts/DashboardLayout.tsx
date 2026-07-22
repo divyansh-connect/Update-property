@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../api';
 import { useAuthStore, useThemeStore, useNotificationStore } from '../store/useStore';
 import { 
   Menu, Bell, Sun, Moon, LogOut, ChevronDown, ChevronRight, User,
@@ -176,22 +178,70 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       submenu: [
         { title: 'Company Profile', path: '/admin/company-settings' },
         { title: 'Users & Roles', path: '/admin/users' },
+        { title: 'Roles & Permissions', path: '/admin/roles' },
         { title: 'Integrations Marketplace', path: '/admin/integrations' },
         { title: 'Connected Apps (QuickBooks)', path: '/platform-integrations/connected' },
       ],
     },
   ];
 
-  const visibleMenuItems = user?.role === 'Super Admin' ? superAdminMenuItems : managerMenuItems;
+  const { data: roles = [] } = useQuery({
+    queryKey: ['rbac-roles-list'],
+    queryFn: () => api.roles.getAll(),
+  });
+
+  const hasModuleAccess = (moduleName: string) => {
+    if (user?.role === 'Super Admin' || user?.role === 'Property Manager') return true;
+    const matchingRole = roles.find(r => r.name.toLowerCase() === user?.role?.toLowerCase());
+    if (!matchingRole) return true; // fallback
+    const permRule = matchingRole.permissions.find((p: any) => p.module === moduleName);
+    return permRule ? permRule.view : false;
+  };
+
+  const getFilteredMenuItems = () => {
+    if (user?.role === 'Super Admin') return superAdminMenuItems;
+
+    const filtered: MenuItem[] = [];
+
+    managerMenuItems.forEach(item => {
+      let moduleName = '';
+      if (item.path.startsWith('/properties') || item.path.startsWith('/buildings') || item.path.startsWith('/units')) {
+        moduleName = 'Properties';
+      } else if (item.path.startsWith('/leasing')) {
+        moduleName = 'Leasing';
+      } else if (item.path.startsWith('/tenants')) {
+        moduleName = 'Tenants';
+      } else if (item.path.startsWith('/owners')) {
+        moduleName = 'Owners';
+      } else if (item.path.startsWith('/rent') || item.path.startsWith('/payments') || item.path.startsWith('/invoices') || item.path.startsWith('/rent-ledger')) {
+        moduleName = 'Rent & Payments';
+      } else if (item.path.startsWith('/accounting')) {
+        moduleName = 'Accounting';
+      } else if (item.path.startsWith('/maintenance') || item.path.startsWith('/inspections') || item.path.startsWith('/vendors')) {
+        moduleName = 'Maintenance';
+      } else if (item.path.startsWith('/reports')) {
+        moduleName = 'Reports';
+      } else if (item.path.startsWith('/communication')) {
+        moduleName = 'Communication';
+      } else if (item.path.startsWith('/admin') || item.path.startsWith('/platform-integrations')) {
+        moduleName = 'Company Settings';
+      } else if (item.path.startsWith('/ai')) {
+        moduleName = 'Dashboard';
+      }
+
+      if (!moduleName || hasModuleAccess(moduleName)) {
+        filtered.push(item);
+      }
+    });
+
+    return filtered;
+  };
+
+  const visibleMenuItems = getFilteredMenuItems();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(() => {
-    const activeItem = visibleMenuItems.find(item => 
-      item.submenu?.some(sub => currentPath === sub.path)
-    );
-    return activeItem ? activeItem.title : null;
-  });
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -204,7 +254,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     if (activeItem) {
       setActiveDropdown(activeItem.title);
     }
-  }, [currentPath]);
+  }, [currentPath, roles]);
 
   const navRef = useRef<HTMLDivElement>(null);
 

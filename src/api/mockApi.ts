@@ -1458,6 +1458,88 @@ rptForecasts = [
 
 let addedOwnerProps: any[] = [];
 
+const generatePermissions = (overrides?: any) => {
+  const modules = [
+    'Dashboard', 'Properties', 'Leasing', 'Tenants', 'Documents', 
+    'Owners', 'Rent & Payments', 'Accounting', 'Maintenance', 
+    'Reports', 'Communication', 'Company Settings', 'AI Assistant'
+  ];
+  return modules.map(m => {
+    const isOverride = overrides && overrides[m];
+    return {
+      module: m,
+      view: isOverride ? (overrides[m].view !== undefined ? !!overrides[m].view : false) : false,
+      create: isOverride ? (overrides[m].create !== undefined ? !!overrides[m].create : false) : false,
+      edit: isOverride ? (overrides[m].edit !== undefined ? !!overrides[m].edit : false) : false,
+      delete: isOverride ? (overrides[m].delete !== undefined ? !!overrides[m].delete : false) : false,
+      approve: isOverride ? (overrides[m].approve !== undefined ? !!overrides[m].approve : false) : false,
+      export: isOverride ? (overrides[m].export !== undefined ? !!overrides[m].export : false) : false,
+    };
+  });
+};
+
+let rbacRolesList = [
+  {
+    id: 'role-pm',
+    name: 'Property Manager',
+    description: 'Master account with full administrative and module access permissions.',
+    permissions: generatePermissions({
+      'Dashboard': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Properties': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Leasing': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Tenants': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Owners': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Rent & Payments': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Accounting': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Maintenance': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Documents': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Reports': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Communication': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'Company Settings': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+      'AI Assistant': { view: true, create: true, edit: true, delete: true, approve: true, export: true },
+    })
+  },
+  {
+    id: 'role-owner',
+    name: 'Owner',
+    description: 'Access to financial statements, property payouts, and occupancy analytics.',
+    permissions: generatePermissions({
+      'Dashboard': { view: true },
+      'Properties': { view: true },
+      'Owners': { view: true },
+      'Reports': { view: true },
+      'Documents': { view: true },
+      'Communication': { view: true },
+      'Rent & Payments': { view: true },
+    })
+  },
+  {
+    id: 'role-tenant',
+    name: 'Tenant',
+    description: 'Access to rent payments, lease terms, and maintenance request creation.',
+    permissions: generatePermissions({
+      'Dashboard': { view: true },
+      'Leasing': { view: true },
+      'Rent & Payments': { view: true, create: true },
+      'Maintenance': { view: true, create: true },
+      'Documents': { view: true },
+      'Communication': { view: true, create: true },
+    })
+  },
+  {
+    id: 'role-maint',
+    name: 'Maintenance',
+    description: 'Field technicians and staff who resolve repair tickets.',
+    permissions: generatePermissions({
+      'Maintenance': { view: true, edit: true },
+    })
+  }
+];
+
+let propertyAssignments: any[] = [];
+let unitAssignments: any[] = [];
+let maintenanceAssignments: any[] = [];
+
 let usersList = [
   { id: 'usr-1', name: 'John Doe', email: 'john@apex.com', role: 'Super Admin', team: 'Property Management', status: 'Active', lastLogin: '2026-07-19 09:30' },
   { id: 'usr-2', name: 'Jane Smith', email: 'jane@apex.com', role: 'Accountant', team: 'Accounting', status: 'Active', lastLogin: '2026-07-18 17:45' },
@@ -3850,16 +3932,74 @@ export const mockApi = {
   roles: {
     getAll: async () => {
       await delay(100);
-      return [
-        { id: 'role-1', name: 'Super Admin', description: 'Full access to all systems and databases.', permissions: ['all'] },
-        { id: 'role-2', name: 'Property Manager', description: 'Manage properties, tenants, and maintenance tickets.', permissions: ['prop_view', 'prop_edit', 'maint_all'] },
-        { id: 'role-3', name: 'Accountant', description: 'Access to financial ledger, payouts, and reports.', permissions: ['acc_view', 'acc_edit'] },
-      ];
+      return [...rbacRolesList];
     },
     create: async (data: any) => {
       await delay(200);
-      return { id: `role-${Date.now()}`, ...data };
+      const newRole = { id: `role-${Date.now()}`, isCustom: true, ...data };
+      rbacRolesList.push(newRole);
+      return newRole;
     },
+    update: async (id: string, data: any) => {
+      await delay(200);
+      const idx = rbacRolesList.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        rbacRolesList[idx] = { ...rbacRolesList[idx], ...data };
+      }
+      return rbacRolesList[idx];
+    },
+    delete: async (id: string) => {
+      await delay(200);
+      rbacRolesList = rbacRolesList.filter(r => r.id !== id);
+      return true;
+    },
+    clone: async (id: string, newName: string) => {
+      await delay(200);
+      const roleToClone = rbacRolesList.find(r => r.id === id);
+      if (!roleToClone) throw new Error('Role not found');
+      const cloned = {
+        ...roleToClone,
+        id: `role-${Date.now()}`,
+        name: newName,
+        isCustom: true,
+      };
+      rbacRolesList.push(cloned);
+      return cloned;
+    }
+  },
+
+  assignments: {
+    getForUser: async (userId: string) => {
+      await delay(100);
+      return {
+        properties: propertyAssignments.filter(a => a.userId === userId).map(a => a.propertyId),
+        units: unitAssignments.filter(a => a.userId === userId).map(a => a.unitId),
+        buildings: maintenanceAssignments.filter(a => a.userId === userId).map(a => a.buildingId),
+        departments: usersList.find(u => u.id === userId)?.departments || [],
+      };
+    },
+    update: async (userId: string, data: { properties?: string[]; units?: string[]; buildings?: string[]; departments?: string[] }) => {
+      await delay(200);
+      if (data.properties) {
+        propertyAssignments = propertyAssignments.filter(a => a.userId !== userId);
+        data.properties.forEach(pid => propertyAssignments.push({ userId, propertyId: pid }));
+      }
+      if (data.units) {
+        unitAssignments = unitAssignments.filter(a => a.userId !== userId);
+        data.units.forEach(uid => unitAssignments.push({ userId, unitId: uid }));
+      }
+      if (data.buildings) {
+        maintenanceAssignments = maintenanceAssignments.filter(a => a.userId !== userId);
+        data.buildings.forEach(bid => maintenanceAssignments.push({ userId, buildingId: bid }));
+      }
+      if (data.departments) {
+        const idx = usersList.findIndex(u => u.id === userId);
+        if (idx !== -1) {
+          usersList[idx] = { ...usersList[idx], departments: data.departments };
+        }
+      }
+      return true;
+    }
   },
 
   companies: {
