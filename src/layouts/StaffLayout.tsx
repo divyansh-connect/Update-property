@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { clsx } from 'clsx';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 interface MenuItem {
   title: string;
@@ -155,6 +156,9 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-muted-foreground hover:text-foreground">
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
+
+            {/* Language Selector */}
+            <LanguageSelector />
 
             {/* Profile Dropdown */}
             <div className="relative">

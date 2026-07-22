@@ -8,6 +8,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { StatusBadge } from '../components/StatusBadge';
 import { clsx } from 'clsx';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 interface MenuItem {
   title: string;
@@ -165,6 +166,9 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
                 )}
               </Button>
             </div>
+
+            {/* Language Selector */}
+            <LanguageSelector />
 
             {/* USER PROFILE DROPDOWN */}
             <div className="relative">

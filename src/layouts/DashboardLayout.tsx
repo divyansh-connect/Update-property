@@ -11,6 +11,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { StatusBadge } from '../components/StatusBadge';
 import { clsx } from 'clsx';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 interface MenuItem {
   title: string;
@@ -576,6 +577,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Language Selector */}
+            <LanguageSelector />
 
             {/* Profile Dropdown */}
             <div className="relative">
