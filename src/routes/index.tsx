@@ -171,6 +171,8 @@ import { OwnerReportsPage } from '../features/owner/OwnerReportsPage';
 import { OwnerProfilePage } from '../features/owner/OwnerProfilePage';
 import { OwnerSupportPage } from '../features/owner/OwnerSupportPage';
 import { TenantLayout } from '../layouts/TenantLayout';
+import { StaffLayout } from '../layouts/StaffLayout';
+import { StaffMaintenancePage } from '../features/maintenance/StaffMaintenancePage';
 import { TenantDashboardPage } from '../features/tenant/TenantDashboardPage';
 import { TenantHomePage } from '../features/tenant/TenantHomePage';
 import { TenantLeasePage } from '../features/tenant/TenantLeasePage';
@@ -254,12 +256,14 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
       navigate({ to: '/landing' });
       return;
     }
-    // Redirect Owner/Tenant from Root to their dashboards
+    // Redirect Owner/Tenant/Staff from Root to their dashboards
     if (location.pathname === '/') {
       if (user?.role === 'Owner') {
         navigate({ to: '/owner' });
       } else if (user?.role === 'Tenant') {
         navigate({ to: '/tenant' });
+      } else if (user?.role === 'Maintenance Staff') {
+        navigate({ to: '/staff/maintenance' });
       }
     }
   }, [isAuthenticated, user, location.pathname, navigate]);
@@ -270,6 +274,7 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
 
   const isOwnerPath = location.pathname === '/owner' || location.pathname.startsWith('/owner/');
   const isTenantPath = location.pathname === '/tenant' || location.pathname.startsWith('/tenant/');
+  const isStaffPath = location.pathname === '/staff' || location.pathname.startsWith('/staff/');
   const isIntegrationsPath = 
     location.pathname.startsWith('/admin/integrations') || 
     location.pathname.startsWith('/platform-integrations');
@@ -280,6 +285,8 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
     if (user?.role === 'Owner' && !isOwnerPath) {
       hasAccess = false;
     } else if (user?.role === 'Tenant' && !isTenantPath) {
+      hasAccess = false;
+    } else if (user?.role === 'Maintenance Staff' && !isStaffPath) {
       hasAccess = false;
     }
   }
@@ -314,6 +321,17 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
       >
         {children}
       </OwnerLayout>
+    );
+  }
+
+  if (isStaffPath) {
+    return (
+      <StaffLayout
+        currentPath={location.pathname}
+        navigate={(path) => navigate({ to: path })}
+      >
+        {children}
+      </StaffLayout>
     );
   }
 
@@ -1398,6 +1416,16 @@ const tenantMaintenanceRoute = createRoute({
   component: () => (
     <ProtectedWrapper>
       <TenantMaintenancePage />
+    </ProtectedWrapper>
+  ),
+});
+
+const staffMaintenanceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/staff/maintenance',
+  component: () => (
+    <ProtectedWrapper>
+      <StaffMaintenancePage />
     </ProtectedWrapper>
   ),
 });
@@ -4623,6 +4651,7 @@ const routeTree = rootRoute.addChildren([
   tenantSupportRoute,
   tenantNotificationsRoute,
   tenantPaymentsHistoryRoute,
+  staffMaintenanceRoute,
   maintenanceRoute,
   requestsRoute,
   newRequestRoute,

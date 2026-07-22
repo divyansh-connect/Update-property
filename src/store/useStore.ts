@@ -84,6 +84,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     } else if (email.toLowerCase().includes('tenant')) {
       role = 'Tenant';
       name = 'Robert Johnson';
+    } else if (email.toLowerCase().includes('staff') || email.toLowerCase().includes('tech')) {
+      role = 'Maintenance Staff';
+      name = 'Technician Lead 1';
     }
 
     const mockUser: User = {

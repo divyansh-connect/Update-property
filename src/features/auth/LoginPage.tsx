@@ -44,6 +44,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
         navigate('/owner');
       } else if (emailLower.includes('tenant')) {
         navigate('/tenant');
+      } else if (emailLower.includes('staff') || emailLower.includes('tech')) {
+        navigate('/staff/maintenance');
       } else {
         navigate('/');
       }
@@ -184,6 +186,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
               className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 p-2 rounded-xl transition text-center"
             >
               🏠 Tenant Portal
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('email', 'staff@apexpm.com');
+                setValue('password', 'password123');
+                onSubmit({ email: 'staff@apexpm.com', password: 'password123' });
+              }}
+              className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 dark:text-amber-400 border border-amber-500/20 p-2 rounded-xl transition text-center col-span-2"
+            >
+              🛠️ Maintenance Staff
             </button>
           </div>
         </div>
