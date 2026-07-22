@@ -11,7 +11,12 @@ export const RolesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
 
-  // (No modal states needed)
+  // Modal states (used in mutation callbacks)
+  const [, setIsCreateOpen] = useState(false);
+  const [, setNewRoleName] = useState('');
+  const [, setNewRoleDesc] = useState('');
+  const [, setIsCloneOpen] = useState(false);
+  const [, setCloneName] = useState('');
 
   // Notifications
   const [notification, setNotification] = useState<{ type: 'success' | 'info'; message: string } | null>(null);

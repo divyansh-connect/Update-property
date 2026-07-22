@@ -35,6 +35,7 @@ export interface Unit {
   buildingId?: string;
   buildingName?: string;
   unitNumber: string;
+  name?: string;
   floor: number;
   bedrooms: number;
   bathrooms: number;

@@ -1540,7 +1540,7 @@ let propertyAssignments: any[] = [];
 let unitAssignments: any[] = [];
 let maintenanceAssignments: any[] = [];
 
-let usersList = [
+let usersList: { id: string; name: string; email: string; role: string; team: string; status: string; lastLogin: string; departments?: string[] }[] = [
   { id: 'usr-1', name: 'John Doe', email: 'john@apex.com', role: 'Super Admin', team: 'Property Management', status: 'Active', lastLogin: '2026-07-19 09:30' },
   { id: 'usr-2', name: 'Jane Smith', email: 'jane@apex.com', role: 'Accountant', team: 'Accounting', status: 'Active', lastLogin: '2026-07-18 17:45' },
   { id: 'usr-3', name: 'Bob Johnson', email: 'bob@apex.com', role: 'Leasing Agent', team: 'Leasing', status: 'Inactive', lastLogin: '2026-07-10 11:15' },
