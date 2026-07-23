@@ -34,16 +34,16 @@ export const CommDashboardPage: React.FC = () => {
 
       {/* QUICK ACTIONS BAR */}
       <div className="flex flex-wrap gap-2.5 p-3.5 bg-card border rounded-2xl">
-        <Button size="sm" onClick={() => navigate({ to: '/communication/inbox' })} className="flex items-center gap-1">
+        <Button size="sm" onClick={() => navigate({ to: '/manager/communication/inbox' })} className="flex items-center gap-1">
           <MessageSquare className="w-4 h-4" /> Open Unified Inbox
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/communication/email' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/communication/email' })} className="flex items-center gap-1">
           <Mail className="w-4 h-4" /> Send Email
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/communication/sms' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/communication/sms' })} className="flex items-center gap-1">
           <Phone className="w-4 h-4" /> Send SMS Notice
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/communication/announcements' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/communication/announcements' })} className="flex items-center gap-1">
           <Megaphone className="w-4 h-4" /> Publish Announcement
         </Button>
       </div>
@@ -93,7 +93,7 @@ export const CommDashboardPage: React.FC = () => {
               <p className="text-xs text-muted-foreground font-semibold">There are {metrics.failedDeliveries} failed email dispatches waiting to be re-sent.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10" onClick={() => navigate({ to: '/communication/activity' })}>
+          <Button size="sm" variant="outline" className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10" onClick={() => navigate({ to: '/manager/communication/activity' })}>
             View Activity Log
           </Button>
         </Card>

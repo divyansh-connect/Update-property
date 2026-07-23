@@ -174,7 +174,7 @@ export const TenantsPage: React.FC<{ filterStatus?: string }> = ({ filterStatus 
         ]}
         action={{
           label: 'Add Tenant',
-          onClick: () => navigate({ to: '/tenants/new' }),
+          onClick: () => navigate({ to: '/manager/tenants/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

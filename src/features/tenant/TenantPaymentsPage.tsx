@@ -9,7 +9,9 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { CreditCard, Landmark, CheckCircle, Loader2 } from 'lucide-react';
-import { ColumnDef } from '@tanstack/react-table';import { clsx } from 'clsx';
+import { ColumnDef } from '@tanstack/react-table';
+import { clsx } from 'clsx';
+import { InteractivePaymentModal } from '../tenants/components/InteractivePaymentModal';
 
 export const TenantPaymentsPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -23,16 +25,16 @@ export const TenantPaymentsPage: React.FC = () => {
   const { data: payments = [], isLoading } = useQuery({ queryKey: ['tenant-payments-list'], queryFn: () => api.tenantPayments.getAll() });
 
   const payMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: (variables?: { amount: number; method: string }) => {
       return api.tenantPayments.payRent({
-        amount: Number(amount),
-        method,
+        amount: variables?.amount || Number(amount),
+        method: variables?.method || method,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-payments-list'] });
       queryClient.invalidateQueries({ queryKey: ['tenant-dashboard-metrics'] });
-      setIsOpen(false);
+      // Modal handles its own closure after success screen delay
     },
   });
 
@@ -105,33 +107,14 @@ export const TenantPaymentsPage: React.FC = () => {
       <DataTable columns={columns} data={payments} loading={isLoading} />
 
       {/* RENT PAYMENT DIALOG */}
-      <FormDialog open={isOpen} onOpenChange={setIsOpen} title="Submit Rent Payment">
-        <div className="space-y-4 pt-2 text-xs font-semibold text-foreground">
-          
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Rent Amount</label>
-            <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Payment Method</label>
-            <Select value={method} onChange={(e: any) => setMethod(e.target.value)}>
-              <option value="ACH">ACH Direct Bank Transfer</option>
-              <option value="Credit Card">Credit Card (2.9% fee)</option>
-              <option value="Debit Card">Debit Card</option>
-            </Select>
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button onClick={() => payMutation.mutate()} disabled={payMutation.isPending}>
-              {payMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              Pay Rent
-            </Button>
-          </div>
-
-        </div>
-      </FormDialog>
+      <InteractivePaymentModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        rentAmount={1250}
+        onPaymentSuccess={async (paymentMethod, paymentAmount) => {
+          await payMutation.mutateAsync({ amount: paymentAmount, method: paymentMethod.toUpperCase() });
+        }}
+      />
     </div>
   );
 };

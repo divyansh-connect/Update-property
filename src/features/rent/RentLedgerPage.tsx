@@ -6,8 +6,10 @@ import { DataTable } from '../../components/DataTable';
 import { FilterBar } from '../../components/FilterBar';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/StatusBadge';
-import { Download } from 'lucide-react';
+import { Download, FileText, Send } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
+import { ProfessionalLedgerView } from './components/ProfessionalLedgerView';
+import { InvoiceDeliveryModal } from './components/InvoiceDeliveryModal';
 
 interface LedgerItem {
   id: string;
@@ -26,6 +28,9 @@ export const RentLedgerPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [propertyFilter, setPropertyFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [viewMode, setViewMode] = useState<'table' | 'professional'>('table');
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [selectedInvoiceData, setSelectedInvoiceData] = useState<any>(null);
 
   // Queries
   const { data: ledger = [], isLoading, error } = useQuery({
@@ -95,7 +100,40 @@ export const RentLedgerPage: React.FC = () => {
       id: 'type',
       cell: ({ row }) => <StatusBadge status={row.original.transactionType} />,
     },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedInvoiceData({
+                id: `INV-${row.original.id}`,
+                tenantName: row.original.tenantName,
+                tenantPhone: '+1 (555) 234-5678',
+                tenantEmail: 'tenant@skyline.com',
+                propertyName: row.original.propertyName,
+                unitNumber: row.original.unitNumber,
+                amount: row.original.debit || row.original.credit || 1400,
+                dueDate: row.original.date,
+              });
+              setIsInvoiceModalOpen(true);
+            }}
+            className="text-[10px] font-bold flex items-center gap-1 text-primary hover:bg-primary/10"
+            title="Deliver Invoice via Email / SMS / WhatsApp"
+          >
+            <Send className="w-3 h-3" /> Deliver
+          </Button>
+        </div>
+      ),
+    },
   ];
+
+  if (viewMode === 'professional') {
+    return <ProfessionalLedgerView onBack={() => setViewMode('table')} />;
+  }
 
   return (
     <div>
@@ -113,10 +151,21 @@ export const RentLedgerPage: React.FC = () => {
         <span className="text-xs font-bold text-muted-foreground uppercase">
           Ledger contains {filteredLedger.length} Line Items
         </span>
-        <Button variant="outline" size="sm" onClick={handleExport} className="text-xs font-semibold flex items-center gap-1.5">
-          <Download className="w-3.5 h-3.5" />
-          Export CSV
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setViewMode('professional')}
+            className="text-xs font-bold flex items-center gap-1.5 text-primary border-primary/30 bg-primary/5 hover:bg-primary/10"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Professional Statement View
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport} className="text-xs font-semibold flex items-center gap-1.5">
+            <Download className="w-3.5 h-3.5" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       <FilterBar
@@ -152,6 +201,12 @@ export const RentLedgerPage: React.FC = () => {
       />
 
       <DataTable columns={columns} data={filteredLedger} loading={isLoading} error={error ? error.message : null} />
+
+      <InvoiceDeliveryModal
+        isOpen={isInvoiceModalOpen}
+        onClose={() => setIsInvoiceModalOpen(false)}
+        invoiceData={selectedInvoiceData}
+      />
     </div>
   );
 };

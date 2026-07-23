@@ -95,7 +95,7 @@ export const NewLeasePage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['leases'] });
       queryClient.invalidateQueries({ queryKey: ['units'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/leasing/leases' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/leasing/leases' }), 2000);
     },
   });
 

@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     await new Promise((resolve) => setTimeout(resolve, 800));
     let role = 'Property Manager';
     let name = 'Sarah Davis';
-    
+
     if (email.toLowerCase().includes('admin')) {
       role = 'Super Admin';
       name = 'John Doe';

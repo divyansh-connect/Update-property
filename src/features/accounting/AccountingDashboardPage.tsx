@@ -52,13 +52,13 @@ export const AccountingDashboardPage: React.FC = () => {
 
       {/* QUICK ACTIONS BAR */}
       <div className="flex flex-wrap gap-2.5 p-3.5 bg-card border rounded-2xl">
-        <Button size="sm" onClick={() => navigate({ to: '/accounting/income' })} className="flex items-center gap-1">
+        <Button size="sm" onClick={() => navigate({ to: '/manager/accounting/income' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Record Income
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/accounting/expenses' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/accounting/expenses' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Record Expense
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/accounting/chart-of-accounts' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/accounting/chart-of-accounts' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Chart of Accounts
         </Button>
       </div>
@@ -169,7 +169,7 @@ export const AccountingDashboardPage: React.FC = () => {
               <span>$45,000.00</span>
             </div>
             <div className="flex justify-end pt-2">
-              <Button size="sm" onClick={() => navigate({ to: '/accounting/reconciliation' })} className="flex items-center gap-1.5 text-xs">
+              <Button size="sm" onClick={() => navigate({ to: '/manager/accounting/reconciliation' })} className="flex items-center gap-1.5 text-xs">
                 Run Reconciliation Matcher <ArrowRight className="w-4 h-4" />
               </Button>
             </div>

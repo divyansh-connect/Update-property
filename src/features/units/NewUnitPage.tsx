@@ -74,7 +74,7 @@ export const NewUnitPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['units'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/units' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/units' }), 2000);
     },
   });
 
@@ -194,7 +194,7 @@ export const NewUnitPage: React.FC = () => {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate({ to: '/units' })}
+            onClick={() => navigate({ to: '/manager/units' })}
             className="flex items-center gap-1 font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />

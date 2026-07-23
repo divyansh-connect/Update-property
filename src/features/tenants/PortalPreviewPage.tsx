@@ -4,9 +4,11 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { StatusBadge } from '../../components/StatusBadge';
-import { CreditCard, Wrench, FileText, Bell, Sparkles, Send } from 'lucide-react';
+import { CreditCard, Bell, Wrench, Send, FileText } from 'lucide-react';
+import { InteractivePaymentModal } from './components/InteractivePaymentModal';
 
 export const PortalPreviewPage: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [success, setSuccess] = useState('');
   const [reqTitle, setReqTitle] = useState('');
 
@@ -66,8 +68,8 @@ export const PortalPreviewPage: React.FC = () => {
             </div>
           </div>
 
-          <Button onClick={handlePay} className="w-full font-bold flex items-center justify-center gap-1">
-            <CreditCard className="w-4 h-4" /> Submit Payment via ACH
+          <Button onClick={() => setIsModalOpen(true)} className="w-full font-bold flex items-center justify-center gap-1.5 py-3">
+            <CreditCard className="w-4 h-4" /> Preview Tenant Payment Process (Trial Mode)
           </Button>
         </Card>
 
@@ -124,6 +126,8 @@ export const PortalPreviewPage: React.FC = () => {
         </Card>
 
       </div>
+
+      <InteractivePaymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

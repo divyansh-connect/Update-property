@@ -193,7 +193,7 @@ export const UnitsPage: React.FC = () => {
         ]}
         action={{
           label: 'Add Unit',
-          onClick: () => navigate({ to: '/properties/units/new' }), // matching routes
+          onClick: () => navigate({ to: '/manager/properties/units/new' }), // matching routes
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

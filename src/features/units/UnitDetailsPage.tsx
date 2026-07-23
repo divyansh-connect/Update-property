@@ -18,7 +18,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 
 export const UnitDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/properties/units/$id' });
+  const { id } = useParams({ from: '/manager/properties/units/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -105,7 +105,7 @@ export const UnitDetailsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/units' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/manager/units' })}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <span className="text-sm font-semibold text-muted-foreground">Back to Units</span>
@@ -131,7 +131,7 @@ export const UnitDetailsPage: React.FC = () => {
               Assign Tenant
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/leasing/leases' })} className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/manager/leasing/leases' })} className="flex items-center gap-1">
             <Plus className="w-4 h-4" />
             Create Lease
           </Button>
@@ -240,7 +240,7 @@ export const UnitDetailsPage: React.FC = () => {
               ) : (
                 <Card className="p-8 text-center border-border">
                   <p className="text-sm font-semibold text-muted-foreground italic mb-4">No active lease agreement registered.</p>
-                  <Button variant="outline" size="sm" onClick={() => navigate({ to: '/leasing/leases' })}>
+                  <Button variant="outline" size="sm" onClick={() => navigate({ to: '/manager/leasing/leases' })}>
                     Create Lease Agreement
                   </Button>
                 </Card>

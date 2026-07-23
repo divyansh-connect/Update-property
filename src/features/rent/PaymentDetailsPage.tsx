@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/Ta
 import { ArrowLeft, Loader2, Printer, Download, RefreshCw, AlertOctagon } from 'lucide-react';
 
 export const PaymentDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/payments/$id' });
+  const { id } = useParams({ from: '/manager/payments/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [msg, setMsg] = useState('');
@@ -58,7 +58,7 @@ export const PaymentDetailsPage: React.FC = () => {
   return (
     <div className="space-y-6 text-foreground">
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/payments' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/manager/payments' })}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <span className="text-sm font-semibold text-muted-foreground">Back to Payments</span>

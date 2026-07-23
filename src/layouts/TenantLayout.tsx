@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore, useThemeStore, useNotificationStore } from '../store/useStore';
-import { 
+import {
   Menu, Bell, Sun, Moon, LogOut, ChevronDown, ChevronRight, User, Home,
   LayoutDashboard, CreditCard, BookOpen, Wrench, FileText, Megaphone,
   UserCheck, Shield, HelpCircle, Package, Eye, ShieldAlert, X, Loader2
@@ -58,7 +58,7 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-300">
-      
+
       {/* SIDEBAR FOR DESKTOP */}
       <aside className="hidden md:flex flex-col border-r bg-card text-card-foreground shrink-0 w-64">
         <div className="h-16 flex items-center px-6 border-b">
@@ -140,7 +140,7 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
 
       {/* MAIN CONTAINER */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
+
         {/* HEADER */}
         <header className="h-16 border-b bg-card flex items-center justify-between px-6 z-10 shrink-0">
           <div className="flex items-center space-x-4">
@@ -151,7 +151,7 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
           </div>
 
           <div className="flex items-center space-x-4 relative">
-            
+
             {/* THEME TOGGLE */}
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-indigo-500" />}

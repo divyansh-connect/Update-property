@@ -116,7 +116,7 @@ export const RequestsPage: React.FC = () => {
         ]}
         action={{
           label: 'Submit Service Ticket',
-          onClick: () => navigate({ to: '/maintenance/requests/new' }),
+          onClick: () => navigate({ to: '/manager/maintenance/requests/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

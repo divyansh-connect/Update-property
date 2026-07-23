@@ -53,7 +53,7 @@ export const NewLeadPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/leasing/leads' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/leasing/leads' }), 2000);
     },
   });
 
@@ -191,7 +191,7 @@ export const NewLeadPage: React.FC = () => {
         </div>
 
         <div className="flex justify-between items-center pt-6 border-t">
-          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/leasing/leads' })} className="flex items-center gap-1">
+          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/manager/leasing/leads' })} className="flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Cancel
           </Button>
           <Button type="submit" disabled={createMutation.isPending}>

@@ -56,16 +56,16 @@ export const MaintenanceDashboardPage: React.FC = () => {
 
       {/* QUICK ACTIONS */}
       <div className="flex flex-wrap gap-2.5 p-3.5 bg-card border rounded-2xl">
-        <Button size="sm" onClick={() => navigate({ to: '/maintenance/requests/new' })} className="flex items-center gap-1">
+        <Button size="sm" onClick={() => navigate({ to: '/manager/maintenance/requests/new' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Create Request
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/maintenance/work-orders' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/maintenance/work-orders' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Create Work Order
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/inspections/new' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/inspections/new' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Schedule Inspection
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/vendors' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/vendors' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Add Vendor
         </Button>
       </div>

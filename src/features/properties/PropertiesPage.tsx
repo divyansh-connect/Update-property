@@ -212,7 +212,7 @@ export const PropertiesPage: React.FC = () => {
         ]}
         action={{
           label: 'Add Property',
-          onClick: () => navigate({ to: '/properties/new' }),
+          onClick: () => navigate({ to: '/manager/properties/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

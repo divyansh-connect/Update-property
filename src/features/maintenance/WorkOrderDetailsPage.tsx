@@ -11,7 +11,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { Printer, Calendar, DollarSign, User, Wrench, ShieldAlert } from 'lucide-react';
 
 export const WorkOrderDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/maintenance/work-orders/$id' });
+  const { id } = useParams({ from: '/manager/maintenance/work-orders/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -102,7 +102,7 @@ export const WorkOrderDetailsPage: React.FC = () => {
           <Button variant="outline" size="sm" onClick={() => window.print()} className="flex items-center gap-1.5 text-xs">
             <Printer className="w-4 h-4" /> Print Form
           </Button>
-          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/maintenance/work-orders' })}>Back</Button>
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/manager/maintenance/work-orders' })}>Back</Button>
         </div>
       </div>
 

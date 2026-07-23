@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api';
 import { useAuthStore, useThemeStore, useNotificationStore } from '../store/useStore';
-import { 
+import {
   Menu, Bell, Sun, Moon, LogOut, ChevronDown, ChevronRight, User,
-  LayoutDashboard, Building2, Home, Key, Users, UserCheck, CreditCard, 
+  LayoutDashboard, Building2, Home, Key, Users, UserCheck, CreditCard,
   BookOpen, Wrench, ShieldAlert, FileText, BarChart3, MessageSquare, Bot, Settings, X, Loader2,
   Briefcase, CalendarCheck, LifeBuoy, Shield
 } from 'lucide-react';
@@ -39,144 +39,142 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // --- SUPER ADMIN MENU ITEMS ---
   const superAdminMenuItems: MenuItem[] = [
-    { title: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/' },
+    { title: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/super-admin' },
     {
       title: 'Companies',
       icon: <Building2 className="w-5 h-5" />,
-      path: '/companies',
+      path: '/super-admin/companies',
       submenu: [
-        { title: 'All Companies', path: '/companies' },
-        { title: 'Create Company', path: '/companies/new' },
-        { title: 'Company Users', path: '/companies/users' },
+        { title: 'All Companies', path: '/super-admin/companies' },
+        { title: 'Create Company', path: '/super-admin/companies/new' },
+        { title: 'Company Users', path: '/super-admin/companies/users' },
       ],
     },
     {
       title: 'Subscriptions',
       icon: <CalendarCheck className="w-5 h-5" />,
-      path: '/subscriptions',
+      path: '/super-admin/subscriptions',
       submenu: [
-        { title: 'Plans', path: '/subscriptions/plans' },
-        { title: 'Active Subscriptions', path: '/subscriptions/active' },
-        { title: 'Invoices', path: '/subscriptions/invoices' },
+        { title: 'Plans', path: '/super-admin/subscriptions/plans' },
+        { title: 'Active Subscriptions', path: '/super-admin/subscriptions/active' },
+        { title: 'Invoices', path: '/super-admin/subscriptions/invoices' },
       ],
     },
     {
       title: 'Platform Users',
       icon: <Users className="w-5 h-5" />,
-      path: '/platform-users',
+      path: '/super-admin/platform-users',
     },
     {
       title: 'Platform Settings',
       icon: <Settings className="w-5 h-5" />,
-      path: '/platform-settings',
+      path: '/super-admin/platform-settings',
       submenu: [
-        { title: 'General', path: '/platform-settings/general' },
-        { title: 'Security & Logs', path: '/platform-security/audit' },
+        { title: 'General', path: '/super-admin/platform-settings/general' },
+        { title: 'Security & Logs', path: '/super-admin/platform-security/audit' },
       ],
     },
   ];
 
   // --- PROPERTY MANAGER MENU ITEMS ---
   const managerMenuItems: MenuItem[] = [
-    { title: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/' },
+    { title: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/manager' },
     {
       title: 'Properties',
       icon: <Building2 className="w-5 h-5" />,
-      path: '/properties',
+      path: '/manager/properties',
       submenu: [
-        { title: 'Properties', path: '/properties' },
-        { title: 'Buildings', path: '/buildings' },
-        { title: 'Units', path: '/units' },
+        { title: 'Properties', path: '/manager/properties' },
+        { title: 'Buildings', path: '/manager/buildings' },
+        { title: 'Units', path: '/manager/units' },
       ],
     },
     {
       title: 'Leasing',
       icon: <Key className="w-5 h-5" />,
-      path: '/leasing',
+      path: '/manager/leasing',
       submenu: [
-        { title: 'Leads', path: '/leasing/leads' },
-        { title: 'Applications', path: '/leasing/applications' },
-        { title: 'Leases', path: '/leasing/leases' },
-        { title: 'Renewals', path: '/leasing/renewals' },
-        { title: 'Move In', path: '/leasing/move-in' },
-        { title: 'Move Out', path: '/leasing/move-out' },
+        { title: 'Leads', path: '/manager/leasing/leads' },
+        { title: 'Applications', path: '/manager/leasing/applications' },
+        { title: 'Leases', path: '/manager/leasing/leases' },
+        { title: 'Renewals', path: '/manager/leasing/renewals' },
+        { title: 'Move In', path: '/manager/leasing/move-in' },
+        { title: 'Move Out', path: '/manager/leasing/move-out' },
       ],
     },
     {
       title: 'Tenants',
       icon: <Users className="w-5 h-5" />,
-      path: '/tenants',
+      path: '/manager/tenants',
       submenu: [
-        { title: 'Tenant Directory', path: '/tenants' },
-        { title: 'Tenant Documents', path: '/tenants/documents' },
+        { title: 'Tenant Directory', path: '/manager/tenants' },
+        { title: 'Tenant Documents', path: '/manager/tenants/documents' },
       ],
     },
     {
       title: 'Documents',
       icon: <FileText className="w-5 h-5" />,
-      path: '/documents/all',
+      path: '/manager/documents/all',
       submenu: [
-        { title: 'All Documents', path: '/documents/all' },
-        { title: 'e-Signatures', path: '/documents/signatures' },
+        { title: 'All Documents', path: '/manager/documents/all' },
+        { title: 'e-Signatures', path: '/manager/documents/signatures' },
       ],
     },
     {
       title: 'Owners',
       icon: <UserCheck className="w-5 h-5" />,
-      path: '/owners',
+      path: '/manager/owners',
     },
     {
       title: 'Rent & Payments',
       icon: <CreditCard className="w-5 h-5" />,
-      path: '/rent',
+      path: '/manager/rent',
       submenu: [
-        { title: 'Dashboard', path: '/rent' },
-        { title: 'Payments', path: '/payments' },
-        { title: 'Invoices', path: '/invoices' },
-        { title: 'Rent Ledger', path: '/rent-ledger' },
+        { title: 'Dashboard', path: '/manager/rent' },
+        { title: 'Payments', path: '/manager/payments' },
+        { title: 'Invoices', path: '/manager/invoices' },
+        { title: 'Rent Ledger', path: '/manager/rent-ledger' },
       ],
     },
     {
       title: 'Accounting',
       icon: <BookOpen className="w-5 h-5" />,
-      path: '/accounting',
+      path: '/manager/accounting',
       submenu: [
-        { title: 'Dashboard', path: '/accounting' },
-        { title: 'Chart of Accounts', path: '/accounting/chart-of-accounts' },
-        { title: 'Income', path: '/accounting/income' },
-        { title: 'Expenses', path: '/accounting/expenses' },
+        { title: 'Dashboard', path: '/manager/accounting' },
+        { title: 'Chart of Accounts', path: '/manager/accounting/chart-of-accounts' },
+        { title: 'Income', path: '/manager/accounting/income' },
+        { title: 'Expenses', path: '/manager/accounting/expenses' },
       ],
     },
     {
       title: 'Maintenance',
       icon: <Wrench className="w-5 h-5" />,
-      path: '/maintenance',
+      path: '/manager/maintenance',
       submenu: [
-        { title: 'Dashboard', path: '/maintenance' },
-        { title: 'Service Requests', path: '/maintenance/requests' },
-        { title: 'Work Orders', path: '/maintenance/work-orders' },
-        { title: 'City Violations', path: '/maintenance/violations' },
-        { title: 'Inspections', path: '/inspections' },
-        { title: 'Vendors', path: '/vendors' },
+        { title: 'Dashboard', path: '/manager/maintenance' },
+        { title: 'Service Requests', path: '/manager/maintenance/requests' },
+        { title: 'Work Orders', path: '/manager/maintenance/work-orders' },
+        { title: 'Inspections', path: '/manager/inspections' },
+        { title: 'Vendors', path: '/manager/vendors' },
       ],
     },
     {
       title: 'Reports',
       icon: <BarChart3 className="w-5 h-5" />,
-      path: '/reports',
+      path: '/manager/reports',
     },
     {
       title: 'Communication',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/communication',
+      path: '/manager/communication',
       submenu: [
-        { title: 'Notifications', path: '/communication/notifications' },
-        { title: 'Maintenance Messages', path: '/communication/messages' },
-        { title: 'Conversations Log', path: '/communication/conversations' },
-        { title: 'Unified Inbox', path: '/communication/inbox' },
+        { title: 'Notifications', path: '/manager/communication/notifications' },
+        { title: 'Maintenance Messages', path: '/manager/communication/messages' },
+        { title: 'Conversations Log', path: '/manager/communication/conversations' },
+        { title: 'Unified Inbox', path: '/manager/communication/inbox' },
       ],
     },
-
     {
       title: 'AI Assistant',
       icon: <Bot className="w-5 h-5" />,
@@ -185,13 +183,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     {
       title: 'Company Settings',
       icon: <Settings className="w-5 h-5" />,
-      path: '/admin',
+      path: '/manager/admin',
       submenu: [
-        { title: 'Company Profile', path: '/admin/company-settings' },
-        { title: 'Users & Roles', path: '/admin/users' },
-        { title: 'Roles & Permissions', path: '/admin/roles' },
-        { title: 'Integrations Marketplace', path: '/admin/integrations' },
-        { title: 'Connected Apps (QuickBooks)', path: '/platform-integrations/connected' },
+        { title: 'Company Profile', path: '/manager/admin/company-settings' },
+        { title: 'Users & Roles', path: '/manager/admin/users' },
+        { title: 'Roles & Permissions', path: '/manager/admin/roles' },
+        { title: 'Integrations Marketplace', path: '/manager/admin/integrations' },
+        { title: 'Connected Apps (QuickBooks)', path: '/super-admin/platform-integrations/connected' },
       ],
     },
   ];
@@ -259,7 +257,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
-    const activeItem = visibleMenuItems.find(item => 
+    const activeItem = visibleMenuItems.find(item =>
       item.submenu?.some(sub => currentPath === sub.path)
     );
     if (activeItem) {
@@ -539,6 +537,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </span>
                 )}
               </Button>
+
+
             </div>
 
 

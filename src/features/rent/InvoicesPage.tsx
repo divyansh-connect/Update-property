@@ -5,9 +5,10 @@ import api from '../../api';
 import { Invoice } from '../../types';
 import { PageHeader } from '../../components/PageHeader';
 import { DataTable } from '../../components/DataTable';
+import { InvoiceDeliveryModal } from './components/InvoiceDeliveryModal';
+import { ItemizedInvoiceModal } from './components/ItemizedInvoiceModal';
 import { FilterBar } from '../../components/FilterBar';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { FormDialog } from '../../components/FormDialog';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/StatusBadge';
 import { Plus, Eye, Trash2, Download } from 'lucide-react';
@@ -115,7 +116,7 @@ export const InvoicesPage: React.FC = () => {
         ]}
         action={{
           label: 'Create Invoice',
-          onClick: () => navigate({ to: '/invoices/new' }),
+          onClick: () => navigate({ to: '/manager/invoices/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />
@@ -149,55 +150,15 @@ export const InvoicesPage: React.FC = () => {
       <DataTable columns={columns} data={filteredInvoices} loading={isLoading} error={error ? error.message : null} />
 
       {/* DETAILED INVOICE MODAL */}
-      <FormDialog
-        open={!!selectedInvoice}
-        onOpenChange={(open) => !open && setSelectedInvoice(null)}
-        title="Itemized Invoice Statement"
-      >
-        {selectedInvoice && (
-          <div className="space-y-6 pt-3 text-xs font-semibold text-foreground">
-            <div className="flex justify-between items-start border-b pb-3">
-              <div>
-                <h4 className="font-extrabold text-sm uppercase">Invoice Statement</h4>
-                <p className="text-[10px] text-muted-foreground font-bold mt-1">NO: {selectedInvoice.id} • DUE: {selectedInvoice.dueDate}</p>
-              </div>
-              <StatusBadge status={selectedInvoice.status} />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-[10px] uppercase text-muted-foreground">Resident Details</p>
-              <p className="text-sm font-bold">{selectedInvoice.tenantName}</p>
-              <p className="text-muted-foreground">{selectedInvoice.propertyName} • Unit {selectedInvoice.unitNumber}</p>
-            </div>
-
-            {/* Line items list */}
-            <div className="space-y-2 border-t pt-4">
-              <p className="text-[10px] uppercase text-muted-foreground tracking-wide">Line Items Breakdown</p>
-              <div className="divide-y border rounded-xl overflow-hidden bg-secondary/15">
-                {selectedInvoice.lineItems.map((item, idx) => (
-                  <div key={idx} className="flex justify-between p-3">
-                    <span>{item.description}</span>
-                    <span className="font-extrabold">${item.amount.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border-t border-dashed pt-4 flex justify-between items-center text-sm font-black">
-              <span>Total Balance Due</span>
-              <span className="text-lg text-rose-500">${selectedInvoice.balance.toLocaleString()}</span>
-            </div>
-
-            <div className="flex justify-end space-x-2 pt-4 border-t">
-              <Button variant="outline" onClick={() => setSelectedInvoice(null)}>Close</Button>
-              <Button onClick={() => {
-                setSelectedInvoice(null);
-                navigate({ to: '/payments/new' });
-              }}>Record Payment</Button>
-            </div>
-          </div>
-        )}
-      </FormDialog>
+      <ItemizedInvoiceModal
+        isOpen={!!selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        invoice={selectedInvoice}
+        onRecordPayment={() => {
+          setSelectedInvoice(null);
+          navigate({ to: '/manager/payments/new' });
+        }}
+      />
 
       <ConfirmDialog
         open={!!deleteId}
