@@ -153,6 +153,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         { title: 'Dashboard', path: '/maintenance' },
         { title: 'Service Requests', path: '/maintenance/requests' },
         { title: 'Work Orders', path: '/maintenance/work-orders' },
+        { title: 'City Violations', path: '/maintenance/violations' },
         { title: 'Inspections', path: '/inspections' },
         { title: 'Vendors', path: '/vendors' },
       ],
@@ -166,7 +167,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       title: 'Communication',
       icon: <MessageSquare className="w-5 h-5" />,
       path: '/communication',
+      submenu: [
+        { title: 'Notifications', path: '/communication/notifications' },
+        { title: 'Maintenance Messages', path: '/communication/messages' },
+        { title: 'Conversations Log', path: '/communication/conversations' },
+        { title: 'Unified Inbox', path: '/communication/inbox' },
+      ],
     },
+
     {
       title: 'AI Assistant',
       icon: <Bot className="w-5 h-5" />,
@@ -557,22 +565,41 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           onClick={() => {
                             markAsRead(n.id);
                             setShowNotifications(false);
+                            let target = (n as any).targetPath || (n as any).link;
+                            if (!target) {
+                              const titleLower = (n.title || '').toLowerCase();
+                              const msgLower = (n.message || '').toLowerCase();
+                              if (titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
+                                target = '/payments';
+                              } else if (titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak')) {
+                                target = '/maintenance/requests';
+                              } else if (titleLower.includes('lease')) {
+                                target = '/leasing/leases';
+                              } else {
+                                target = '/communication/notifications';
+                              }
+                            }
+                            if (navigate) navigate(target);
                           }}
                           className={clsx(
-                            'p-2.5 rounded-lg border border-border/40 hover:bg-muted/50 cursor-pointer transition-all',
+                            'p-2.5 rounded-lg border border-border/40 hover:bg-primary/10 cursor-pointer transition-all group',
                             !n.read && 'bg-primary/5 border-primary/20'
                           )}
                         >
                           <div className="flex items-start justify-between">
-                            <span className="font-semibold text-xs">{n.title}</span>
+                            <span className="font-semibold text-xs group-hover:text-primary transition-colors">{n.title}</span>
                             <span className="text-[10px] text-muted-foreground">{n.time}</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                             {n.message}
                           </p>
+                          <span className="text-[9px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity block mt-1">
+                            Click to open detail page →
+                          </span>
                         </div>
                       ))
                     )}
+
                   </div>
                 </div>
               )}

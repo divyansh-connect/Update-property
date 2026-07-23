@@ -1,18 +1,41 @@
 import React from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { PageHeader } from '../../components/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useNotificationStore } from '../../store/useStore';
-import { Check, Trash2, Bell } from 'lucide-react';
+import { Check, Trash2, Bell, ExternalLink, ArrowRight } from 'lucide-react';
 
 export const TenantNotificationsPage: React.FC = () => {
+  const navigate = useNavigate();
   const { notifications, markAsRead, markAllAsRead, clearAll } = useNotificationStore();
+
+  const handleTenantNotifClick = (n: any) => {
+    markAsRead(n.id);
+    let target = n.targetPath || n.link;
+    if (!target) {
+      const titleLower = (n.title || '').toLowerCase();
+      const msgLower = (n.message || '').toLowerCase();
+      if (titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
+        target = '/tenant/payments';
+      } else if (titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak') || msgLower.includes('repair')) {
+        target = '/tenant/maintenance';
+      } else if (titleLower.includes('lease')) {
+        target = '/tenant/lease';
+      } else if (titleLower.includes('document')) {
+        target = '/tenant/documents';
+      } else {
+        target = '/tenant/messages';
+      }
+    }
+    navigate({ to: target as any });
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Tenant Notifications Center"
-        description="Verify recent updates regarding your lease, payments, maintenance orders, and announcements."
+        description="Click any notification to navigate directly to its detail page in 1-click."
         breadcrumbs={[
           { label: 'Home', href: '/tenant' },
           { label: 'Notifications' }
@@ -44,13 +67,17 @@ export const TenantNotificationsPage: React.FC = () => {
           {notifications.map((n) => (
             <div 
               key={n.id} 
-              className={`p-4 rounded-xl border bg-card flex justify-between items-start transition ${
+              onClick={() => handleTenantNotifClick(n)}
+              className={`p-4 rounded-xl border bg-card flex justify-between items-start transition cursor-pointer hover:border-primary/50 group ${
                 !n.read ? 'border-l-4 border-l-primary' : 'opacity-85'
               }`}
             >
               <div className="space-y-1 text-xs font-semibold">
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-foreground">{n.title}</span>
+                  <span className="font-extrabold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
+                    {n.title}
+                    <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                  </span>
                   {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
                 </div>
                 <p className="text-muted-foreground text-[11px] font-medium leading-relaxed">{n.message}</p>
@@ -58,16 +85,18 @@ export const TenantNotificationsPage: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <StatusBadge status={n.type} />
-                {!n.read && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => markAsRead(n.id)}
-                    className="text-[10px] font-extrabold px-2 py-1 text-primary"
-                  >
-                    Mark read
-                  </Button>
-                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTenantNotifClick(n);
+                  }}
+                  className="text-[10px] font-extrabold px-2 py-1 gap-1 text-primary border-primary/30"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Open
+                </Button>
               </div>
             </div>
           ))}
@@ -78,3 +107,4 @@ export const TenantNotificationsPage: React.FC = () => {
 };
 
 export default TenantNotificationsPage;
+
