@@ -1158,13 +1158,26 @@ for (let sm = 1; sm <= 3010; sm++) {
 }
 
 // 53. Communication Notifications (Minimum 6000)
-const notifTypes = ['System', 'Maintenance', 'Payment', 'Lease', 'Inspection', 'Documents', 'Messages'] as const;
+const notifTemplates = [
+  { type: 'Payment', title: 'Rent Payment Received', body: 'Payment of $1,450.00 received from Sarah Jenkins for Unit #402.' },
+  { type: 'Maintenance', title: 'New Service Request Submitted', body: 'Water leak reported in bathroom ceiling at Sunset Heights #402.' },
+  { type: 'Lease', title: 'Lease Renewal Notice', body: 'Lease agreement for Michael Chang (Unit #105) is expiring in 30 days.' },
+  { type: 'Payment', title: 'Security Deposit Paid', body: 'Security deposit payment of $2,000.00 verified for Robert Jones.' },
+  { type: 'Maintenance', title: 'Work Order Completed', body: 'HVAC repair work order #WO-104 completed by Plumbing Pros LLC.' },
+  { type: 'Inspection', title: 'Annual Fire Safety Inspection Scheduled', body: 'City safety inspection scheduled for Oakwood Apartments on July 28.' },
+  { type: 'Documents', title: 'Signed Lease Agreement Uploaded', body: 'Signed lease agreement uploaded by Emily Davis for Grand Avenue #812.' },
+  { type: 'Messages', title: 'New Tenant In-App Message', body: 'New message received from Jennifer Garcia regarding parking pass.' },
+  { type: 'System', title: 'Monthly Accounting Audit Completed', body: 'Automated monthly financial payout statement generated successfully.' },
+  { type: 'Maintenance', title: 'City Violation Notice Received', body: 'Code violation #CV-902 logged for exterior lighting maintenance.' },
+];
+
 for (let n = 1; n <= 6010; n++) {
+  const tpl = notifTemplates[n % notifTemplates.length];
   commNotificationsList.push({
     id: `cnot-${n}`,
-    type: notifTypes[n % notifTypes.length],
-    title: `Notification Title #${n}`,
-    body: `This is details context regarding notification number #${n}.`,
+    type: tpl.type as any,
+    title: tpl.title,
+    body: tpl.body,
     status: n % 4 === 0 ? 'Read' : 'Unread',
     createdAt: `2026-07-${(n % 28) + 1}`,
   });

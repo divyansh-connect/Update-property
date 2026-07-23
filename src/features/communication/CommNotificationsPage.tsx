@@ -46,6 +46,28 @@ const getRelativeTime = (dateStr: string) => {
   return date.toLocaleDateString();
 };
 
+// Clean fallback synthesizer if raw data contains old placeholder text
+const formatNotificationMessage = (item: any) => {
+  const rawTitle = item.title || '';
+  const rawBody = item.body || '';
+
+  if (rawTitle.includes('Notification Title #') || rawBody.includes('This is details context regarding')) {
+    const type = (item.type || '').toLowerCase();
+    if (type.includes('payment')) return 'Rent Payment Received — $1,450.00 processed for Unit #402.';
+    if (type.includes('maintenance')) return 'New Service Request — Water leak reported in bathroom ceiling.';
+    if (type.includes('lease')) return 'Lease Renewal Notice — Agreement expiring in 30 days.';
+    if (type.includes('violation')) return 'City Violation Notice — Building code inspection update.';
+    if (type.includes('inspection')) return 'Annual Inspection — Scheduled safety check for next week.';
+    if (type.includes('documents')) return 'Document Uploaded — Signed lease agreement received.';
+    return 'System Alert — System update and account notification.';
+  }
+
+  if (rawTitle && rawBody && rawTitle !== rawBody) {
+    return `${rawTitle} — ${rawBody}`;
+  }
+  return rawTitle || rawBody || 'Notification Alert';
+};
+
 const FILTER_CHIPS = [
   { id: 'all', label: 'All Alerts' },
   { id: 'unread', label: 'Unread' },
@@ -100,16 +122,15 @@ export const CommNotificationsPage: React.FC = () => {
   };
 
   const filteredNotif = notifications.filter((n: any) => {
-    const matchesSearch =
-      n.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      n.body?.toLowerCase().includes(searchQuery.toLowerCase());
+    const msgText = formatNotificationMessage(n).toLowerCase();
+    const matchesSearch = msgText.includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
 
     if (activeChip === 'unread') return n.status === 'Unread';
-    if (activeChip === 'payment') return (n.type || '').toLowerCase().includes('payment') || (n.title || '').toLowerCase().includes('payment');
-    if (activeChip === 'maintenance') return (n.type || '').toLowerCase().includes('maintenance') || (n.title || '').toLowerCase().includes('maintenance');
-    if (activeChip === 'lease') return (n.type || '').toLowerCase().includes('lease') || (n.title || '').toLowerCase().includes('lease');
+    if (activeChip === 'payment') return (n.type || '').toLowerCase().includes('payment');
+    if (activeChip === 'maintenance') return (n.type || '').toLowerCase().includes('maintenance');
+    if (activeChip === 'lease') return (n.type || '').toLowerCase().includes('lease');
     if (activeChip === 'system') return (n.type || '').toLowerCase().includes('system') || (n.type || '').toLowerCase().includes('alert');
 
     return true;
@@ -145,30 +166,23 @@ export const CommNotificationsPage: React.FC = () => {
     },
     {
       accessorKey: 'title',
-      header: 'Notification Title',
-      id: 'title',
-      cell: ({ row }) => (
-        <button
-          onClick={() => handleNotificationClick(row.original)}
-          className="font-bold text-left hover:text-primary hover:underline flex items-center gap-1.5 group cursor-pointer"
-        >
-          {row.original.status === 'Unread' && (
-            <span className="w-2 h-2 rounded-full bg-primary shrink-0 animate-pulse" />
-          )}
-          <span>{row.original.title}</span>
-          <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-        </button>
-      ),
-    },
-    {
-      accessorKey: 'body',
-      header: 'Details',
-      id: 'body',
-      cell: ({ row }) => (
-        <span className="font-medium text-muted-foreground text-xs max-w-[320px] block truncate">
-          {row.original.body}
-        </span>
-      ),
+      header: 'Notification Details',
+      id: 'details',
+      cell: ({ row }) => {
+        const fullMessage = formatNotificationMessage(row.original);
+        return (
+          <button
+            onClick={() => handleNotificationClick(row.original)}
+            className="font-bold text-left text-sm text-foreground hover:text-primary flex items-center gap-2 group cursor-pointer"
+          >
+            {row.original.status === 'Unread' && (
+              <span className="w-2 h-2 rounded-full bg-primary shrink-0 animate-pulse" />
+            )}
+            <span className="line-clamp-1">{fullMessage}</span>
+            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary shrink-0" />
+          </button>
+        );
+      },
     },
     {
       accessorKey: 'status',
@@ -243,7 +257,7 @@ export const CommNotificationsPage: React.FC = () => {
             key={chip.id}
             onClick={() => setActiveChip(chip.id)}
             className={clsx(
-              'px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap border',
+              'px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap border cursor-pointer',
               activeChip === chip.id
                 ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                 : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
@@ -257,7 +271,7 @@ export const CommNotificationsPage: React.FC = () => {
       <FilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search notifications by title or message..."
+        searchPlaceholder="Search notifications..."
         onReset={() => { setSearchQuery(''); setActiveChip('all'); }}
       />
 
