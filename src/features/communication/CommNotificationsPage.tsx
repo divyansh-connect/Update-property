@@ -6,8 +6,9 @@ import { DataTable } from '../../components/DataTable';
 import { FilterBar } from '../../components/FilterBar';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/StatusBadge';
+import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { CommunicationLayout } from './components/CommunicationLayout';
-import { CheckCheck, ArrowRight, Bell, BellOff, CreditCard, Wrench, Users, FileText, ShieldAlert, MessageSquare } from 'lucide-react';
+import { CheckCheck, ArrowRight, Bell, BellOff, CreditCard, Wrench, Users, FileText, ShieldAlert, MessageSquare, AlertCircle } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { clsx } from 'clsx';
 
@@ -45,12 +46,22 @@ const getRelativeTime = (dateStr: string) => {
   return date.toLocaleDateString();
 };
 
+const FILTER_CHIPS = [
+  { id: 'all', label: 'All Alerts' },
+  { id: 'unread', label: 'Unread' },
+  { id: 'payment', label: 'Payments' },
+  { id: 'maintenance', label: 'Maintenance' },
+  { id: 'lease', label: 'Leasing' },
+  { id: 'system', label: 'System Alerts' },
+];
+
 export const CommNotificationsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeChip, setActiveChip] = useState('all');
 
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data: notifications = [], isLoading, isError } = useQuery({
     queryKey: ['comm-notifications-list'],
     queryFn: () => api.notifications.getAll(),
   });
@@ -88,10 +99,21 @@ export const CommNotificationsPage: React.FC = () => {
     navigate({ to: target as any });
   };
 
-  const filteredNotif = notifications.filter((n: any) =>
-    n.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    n.body?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredNotif = notifications.filter((n: any) => {
+    const matchesSearch =
+      n.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      n.body?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (activeChip === 'unread') return n.status === 'Unread';
+    if (activeChip === 'payment') return (n.type || '').toLowerCase().includes('payment') || (n.title || '').toLowerCase().includes('payment');
+    if (activeChip === 'maintenance') return (n.type || '').toLowerCase().includes('maintenance') || (n.title || '').toLowerCase().includes('maintenance');
+    if (activeChip === 'lease') return (n.type || '').toLowerCase().includes('lease') || (n.title || '').toLowerCase().includes('lease');
+    if (activeChip === 'system') return (n.type || '').toLowerCase().includes('system') || (n.type || '').toLowerCase().includes('alert');
+
+    return true;
+  });
 
   const totalCount = notifications.length;
   const unreadCount = notifications.filter((n: any) => n.status === 'Unread').length;
@@ -128,10 +150,10 @@ export const CommNotificationsPage: React.FC = () => {
       cell: ({ row }) => (
         <button
           onClick={() => handleNotificationClick(row.original)}
-          className="font-bold text-left hover:text-primary hover:underline flex items-center gap-1.5 group"
+          className="font-bold text-left hover:text-primary hover:underline flex items-center gap-1.5 group cursor-pointer"
         >
           {row.original.status === 'Unread' && (
-            <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-primary shrink-0 animate-pulse" />
           )}
           <span>{row.original.title}</span>
           <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
@@ -143,7 +165,7 @@ export const CommNotificationsPage: React.FC = () => {
       header: 'Details',
       id: 'body',
       cell: ({ row }) => (
-        <span className="font-medium text-muted-foreground text-xs max-w-[300px] block truncate">
+        <span className="font-medium text-muted-foreground text-xs max-w-[320px] block truncate">
           {row.original.body}
         </span>
       ),
@@ -164,7 +186,7 @@ export const CommNotificationsPage: React.FC = () => {
             size="icon"
             onClick={() => markMutation.mutate(row.original.id)}
             title="Mark as read"
-            className="h-7 w-7"
+            className="h-7 w-7 hover:bg-emerald-500/10 hover:text-emerald-600"
           >
             <CheckCheck className="w-4 h-4 text-emerald-500" />
           </Button>
@@ -184,55 +206,83 @@ export const CommNotificationsPage: React.FC = () => {
       ]}
     >
       {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 shadow-sm hover:border-primary/40 transition-colors">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <Bell className="w-5 h-5 text-primary" />
           </div>
           <div>
             <p className="text-2xl font-black text-foreground">{totalCount}</p>
-            <p className="text-xs font-semibold text-muted-foreground">Total</p>
+            <p className="text-xs font-semibold text-muted-foreground">Total Notifications</p>
           </div>
         </div>
-        <div className="bg-card border border-rose-500/20 rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center">
+        <div className="bg-card border border-rose-500/20 rounded-xl p-4 flex items-center gap-3 shadow-sm hover:border-rose-500/40 transition-colors">
+          <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0">
             <Bell className="w-5 h-5 text-rose-500" />
           </div>
           <div>
             <p className="text-2xl font-black text-rose-500">{unreadCount}</p>
-            <p className="text-xs font-semibold text-muted-foreground">Unread</p>
+            <p className="text-xs font-semibold text-muted-foreground">Unread Alerts</p>
           </div>
         </div>
-        <div className="bg-card border border-emerald-500/20 rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+        <div className="bg-card border border-emerald-500/20 rounded-xl p-4 flex items-center gap-3 shadow-sm hover:border-emerald-500/40 transition-colors">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
             <BellOff className="w-5 h-5 text-emerald-500" />
           </div>
           <div>
             <p className="text-2xl font-black text-emerald-500">{readCount}</p>
-            <p className="text-xs font-semibold text-muted-foreground">Read</p>
+            <p className="text-xs font-semibold text-muted-foreground">Read Alerts</p>
           </div>
         </div>
+      </div>
+
+      {/* Filter Chips Bar */}
+      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
+        {FILTER_CHIPS.map((chip) => (
+          <button
+            key={chip.id}
+            onClick={() => setActiveChip(chip.id)}
+            className={clsx(
+              'px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all whitespace-nowrap border',
+              activeChip === chip.id
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+            )}
+          >
+            {chip.label}
+          </button>
+        ))}
       </div>
 
       <FilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search notifications by title or message..."
-        onReset={() => setSearchQuery('')}
+        onReset={() => { setSearchQuery(''); setActiveChip('all'); }}
       />
 
-      {!isLoading && filteredNotif.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
+      {isError ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center border border-rose-500/20 rounded-2xl bg-rose-500/5">
+          <AlertCircle className="w-10 h-10 text-rose-500 mb-2" />
+          <h3 className="text-base font-bold text-foreground mb-1">Failed to load notifications</h3>
+          <p className="text-xs text-muted-foreground">Please refresh the page or try again later.</p>
+        </div>
+      ) : isLoading ? (
+        <LoadingSkeleton type="table" />
+      ) : filteredNotif.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-border rounded-2xl bg-muted/5">
           <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
             <Bell className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-base font-bold text-foreground mb-1">No notifications yet</h3>
+          <h3 className="text-base font-bold text-foreground mb-1">No notifications found</h3>
           <p className="text-sm text-muted-foreground max-w-xs">
-            All system alerts will appear here. Check back soon!
+            {searchQuery || activeChip !== 'all'
+              ? 'No notifications match your search or filter options.'
+              : 'All system alerts will appear here. Check back soon!'}
           </p>
         </div>
       ) : (
-        <DataTable columns={columns} data={filteredNotif.slice(0, 100)} loading={isLoading} />
+        <DataTable columns={columns} data={filteredNotif.slice(0, 100)} />
       )}
     </CommunicationLayout>
   );
