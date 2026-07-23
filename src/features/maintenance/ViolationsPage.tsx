@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { PageHeader } from '../../components/PageHeader';
 import { DataTable } from '../../components/DataTable';
-import { FilterBar } from '../../components/FilterBar';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
 import { StatusBadge } from '../../components/StatusBadge';
 import { 
   ShieldAlert, 
@@ -15,7 +15,9 @@ import {
   FileText, 
   AlertTriangle,
   ExternalLink,
-  Plus
+  Plus,
+  Search,
+  RotateCcw
 } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { AdvancePaymentModal, AdvancePaymentData } from './components/AdvancePaymentModal';
@@ -145,13 +147,16 @@ export const ViolationsPage: React.FC = () => {
       header: 'Violation Code',
       id: 'code',
       cell: ({ row }) => (
-        <div className="space-y-0.5">
-          <span className="font-black text-xs text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
-            {row.original.violationCode}
+        <div className="space-y-1">
+          <span className="inline-flex items-center gap-1.5 font-mono font-extrabold text-xs bg-gradient-to-r from-primary/10 to-indigo-500/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg whitespace-nowrap shadow-xs hover:bg-primary/20 transition-all cursor-pointer">
+            <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span>{row.original.violationCode}</span>
           </span>
           <p className="text-[10px] text-muted-foreground font-semibold">{row.original.issuingAgency}</p>
         </div>
       ),
+
+
     },
     {
       accessorKey: 'propertyAddress',
@@ -273,49 +278,50 @@ export const ViolationsPage: React.FC = () => {
       />
 
       {/* KPI METRIC CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border bg-card flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <Card className="p-4 border bg-card flex items-center justify-between shadow-sm">
           <div className="space-y-1">
-            <span className="text-xs font-extrabold uppercase text-muted-foreground">Active City Violations</span>
+            <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">Active City Violations</span>
             <p className="text-2xl font-black text-foreground">{activeCount}</p>
           </div>
-          <div className="p-3 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20">
-            <ShieldAlert className="w-6 h-6" />
+          <div className="p-2.5 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20 shrink-0">
+            <ShieldAlert className="w-5 h-5" />
           </div>
         </Card>
 
-        <Card className="p-4 border bg-card flex items-center justify-between">
+        <Card className="p-4 border bg-card flex items-center justify-between shadow-sm">
           <div className="space-y-1">
-            <span className="text-xs font-extrabold uppercase text-muted-foreground">Pending Fines Owed</span>
+            <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">Pending Fines Owed</span>
             <p className="text-2xl font-black text-amber-500">${totalFines.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-amber-500/10 text-amber-500 rounded-2xl border border-amber-500/20">
-            <DollarSign className="w-6 h-6" />
+          <div className="p-2.5 bg-amber-500/10 text-amber-500 rounded-2xl border border-amber-500/20 shrink-0">
+            <DollarSign className="w-5 h-5" />
           </div>
         </Card>
 
-        <Card className="p-4 border bg-card flex items-center justify-between">
+        <Card className="p-4 border bg-card flex items-center justify-between shadow-sm">
           <div className="space-y-1">
-            <span className="text-xs font-extrabold uppercase text-muted-foreground">Impending Deadlines</span>
+            <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">Impending Deadlines</span>
             <p className="text-2xl font-black text-foreground">3 Tickets</p>
           </div>
-          <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl border border-blue-500/20">
-            <Clock className="w-6 h-6" />
+          <div className="p-2.5 bg-blue-500/10 text-blue-500 rounded-2xl border border-blue-500/20 shrink-0">
+            <Clock className="w-5 h-5" />
           </div>
         </Card>
 
-        <Card className="p-4 border bg-card flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-xs font-extrabold uppercase text-muted-foreground">City API Sync Status</span>
-            <p className="text-sm font-extrabold text-emerald-500 flex items-center gap-1">
-              <CheckCircle className="w-4 h-4" /> Connected & Live
+        <Card className="p-4 border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm overflow-hidden">
+          <div className="space-y-1 min-w-0">
+            <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block truncate">City API Sync Status</span>
+            <p className="text-xs font-extrabold text-emerald-500 flex items-center gap-1">
+              <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>Connected & Live</span>
             </p>
           </div>
           <Button
             size="sm"
             onClick={handleSyncApi}
             disabled={isSyncing}
-            className="font-bold bg-primary text-white gap-1.5"
+            className="font-bold bg-primary text-white gap-1.5 text-xs h-8 shrink-0 w-full sm:w-auto"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : 'Sync City API'}
@@ -323,27 +329,55 @@ export const ViolationsPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* FILTER & ACTIONS BAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <FilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search violation code, address, or description..."
-          onReset={() => {
-            setSearchQuery('');
-            setStatusFilter('All');
-          }}
-        />
+      {/* UNIFIED FILTER & ACTIONS CONTROL BAR */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-card border border-border p-4 rounded-xl shadow-sm">
+        <div className="flex-1 flex flex-col sm:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search violation code, address, or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setIsAdvanceModalOpen(true)}
-            className="font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
-          >
-            <Plus className="w-4 h-4" />
-            Record Vendor Advance
-          </Button>
+          <div className="w-full sm:w-44">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="All">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Appealed">Appealed</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+
+          {(searchQuery || statusFilter !== 'All') && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery('');
+                setStatusFilter('All');
+              }}
+              className="font-semibold gap-1.5 h-10 shrink-0"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reset
+            </Button>
+          )}
         </div>
+
+        <Button
+          onClick={() => setIsAdvanceModalOpen(true)}
+          className="font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 h-10 shrink-0 shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          Record Vendor Advance
+        </Button>
       </div>
 
       {/* DATA TABLE */}
@@ -362,3 +396,4 @@ export const ViolationsPage: React.FC = () => {
 };
 
 export default ViolationsPage;
+
