@@ -436,10 +436,46 @@ const indexRoute = createRoute({
   path: '/',
   component: () => {
     const { user } = useAuthStore();
+    const navigate = useNavigate();
+    
+    React.useEffect(() => {
+      if (user?.role === 'Super Admin') {
+        navigate({ to: '/super-admin' });
+const superAdminIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/super-admin',
+  component: () => (
+    <ProtectedWrapper>
+      <SuperAdminDashboardPage />
+    </ProtectedWrapper>
+  ),
+});
+
+const managerIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/manager',
+  component: () => (
+    <ProtectedWrapper>
+      <DashboardPage />
+    </ProtectedWrapper>
+  ),
+});
+
+      } else if (user?.role === 'Owner') {
+        navigate({ to: '/owner' });
+      } else if (user?.role === 'Tenant') {
+        navigate({ to: '/tenant' });
+      } else if (user?.role === 'Maintenance Staff') {
+        navigate({ to: '/staff/maintenance' });
+      } else {
+        navigate({ to: '/manager' });
+      }
+    }, [user, navigate]);
+
     return (
-      <ProtectedWrapper>
-        {user?.role === 'Super Admin' ? <SuperAdminDashboardPage /> : <DashboardPage />}
-      </ProtectedWrapper>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   },
 });
@@ -447,7 +483,7 @@ const indexRoute = createRoute({
 // Properties Routes (Phase 2)
 const propertiesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties',
+  path: '/manager/properties',
   component: () => (
     <ProtectedWrapper>
       <PropertiesPage />
@@ -457,7 +493,7 @@ const propertiesRoute = createRoute({
 
 const newPropertyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/new',
+  path: '/manager/properties/new',
   component: () => (
     <ProtectedWrapper>
       <NewPropertyPage />
@@ -467,7 +503,7 @@ const newPropertyRoute = createRoute({
 
 const propertyDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/$id',
+  path: '/manager/properties/$id',
   component: () => (
     <ProtectedWrapper>
       <PropertyDetailsPage />
@@ -477,7 +513,7 @@ const propertyDetailsRoute = createRoute({
 
 const buildingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/buildings',
+  path: '/manager/buildings',
   component: () => (
     <ProtectedWrapper>
       <BuildingsPage />
@@ -487,7 +523,7 @@ const buildingsRoute = createRoute({
 
 const unitsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/units',
+  path: '/manager/units',
   component: () => (
     <ProtectedWrapper>
       <UnitsPage />
@@ -497,7 +533,7 @@ const unitsRoute = createRoute({
 
 const newUnitRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/units/new',
+  path: '/manager/properties/units/new',
   component: () => (
     <ProtectedWrapper>
       <NewUnitPage />
@@ -507,7 +543,7 @@ const newUnitRoute = createRoute({
 
 const unitDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/units/$id',
+  path: '/manager/properties/units/$id',
   component: () => (
     <ProtectedWrapper>
       <UnitDetailsPage />
@@ -518,7 +554,7 @@ const unitDetailsRoute = createRoute({
 // Tenants Routes (Phase 3)
 const tenantsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants',
+  path: '/manager/tenants',
   component: () => (
     <ProtectedWrapper>
       <TenantsPage />
@@ -528,7 +564,7 @@ const tenantsRoute = createRoute({
 
 const activeTenantsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/active',
+  path: '/manager/tenants/active',
   component: () => (
     <ProtectedWrapper>
       <TenantsPage filterStatus="Active" />
@@ -538,7 +574,7 @@ const activeTenantsRoute = createRoute({
 
 const formerTenantsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/former',
+  path: '/manager/tenants/former',
   component: () => (
     <ProtectedWrapper>
       <TenantsPage filterStatus="Inactive" />
@@ -548,7 +584,7 @@ const formerTenantsRoute = createRoute({
 
 const portalPreviewRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/portal-preview',
+  path: '/manager/tenants/portal-preview',
   component: () => (
     <ProtectedWrapper>
       <PortalPreviewPage />
@@ -558,7 +594,7 @@ const portalPreviewRoute = createRoute({
 
 const newTenantRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/new',
+  path: '/manager/tenants/new',
   component: () => (
     <ProtectedWrapper>
       <NewTenantPage />
@@ -568,7 +604,7 @@ const newTenantRoute = createRoute({
 
 const editTenantRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/$id/edit',
+  path: '/manager/tenants/$id/edit',
   component: () => (
     <ProtectedWrapper>
       <EditTenantPage />
@@ -578,7 +614,7 @@ const editTenantRoute = createRoute({
 
 const tenantDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/$id',
+  path: '/manager/tenants/$id',
   component: () => (
     <ProtectedWrapper>
       <TenantDetailsPage />
@@ -589,7 +625,7 @@ const tenantDetailsRoute = createRoute({
 // Leases & Leasing Routes (Phase 3)
 const leasesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/leases',
+  path: '/manager/leasing/leases',
   component: () => (
     <ProtectedWrapper>
       <LeasesPage />
@@ -619,7 +655,7 @@ const leaseDetailsRoute = createRoute({
 
 const renewalsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/renewals',
+  path: '/manager/leasing/renewals',
   component: () => (
     <ProtectedWrapper>
       <RenewalsPage />
@@ -629,7 +665,7 @@ const renewalsRoute = createRoute({
 
 const moveInOutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/move-in-out',
+  path: '/manager/leasing/move-in-out',
   component: () => (
     <ProtectedWrapper>
       <MoveInOutPage />
@@ -639,7 +675,7 @@ const moveInOutRoute = createRoute({
 
 const applicationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/applications',
+  path: '/manager/leasing/applications',
   component: () => (
     <ProtectedWrapper>
       <ApplicationsPage />
@@ -670,7 +706,7 @@ const crmDashboardRoute = createRoute({
 
 const leadsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/leads',
+  path: '/manager/leasing/leads',
   component: () => (
     <ProtectedWrapper>
       <LeadsPage />
@@ -701,7 +737,7 @@ const leadDetailsRoute = createRoute({
 // Rent Collection & Payments (Phase 4)
 const rentDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/rent',
+  path: '/manager/rent',
   component: () => (
     <ProtectedWrapper>
       <RentDashboardPage />
@@ -711,7 +747,7 @@ const rentDashboardRoute = createRoute({
 
 const paymentsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payments',
+  path: '/manager/payments',
   component: () => (
     <ProtectedWrapper>
       <PaymentsPage />
@@ -721,7 +757,7 @@ const paymentsRoute = createRoute({
 
 const newPaymentRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payments/new',
+  path: '/manager/payments/new',
   component: () => (
     <ProtectedWrapper>
       <NewPaymentPage />
@@ -731,7 +767,7 @@ const newPaymentRoute = createRoute({
 
 const paymentDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payments/$id',
+  path: '/manager/payments/$id',
   component: () => (
     <ProtectedWrapper>
       <PaymentDetailsPage />
@@ -741,7 +777,7 @@ const paymentDetailsRoute = createRoute({
 
 const rentLedgerRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/rent-ledger',
+  path: '/manager/rent-ledger',
   component: () => (
     <ProtectedWrapper>
       <RentLedgerPage />
@@ -751,7 +787,7 @@ const rentLedgerRoute = createRoute({
 
 const invoicesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/invoices',
+  path: '/manager/invoices',
   component: () => (
     <ProtectedWrapper>
       <InvoicesPage />
@@ -761,7 +797,7 @@ const invoicesRoute = createRoute({
 
 const newInvoiceRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/invoices/new',
+  path: '/manager/invoices/new',
   component: () => (
     <ProtectedWrapper>
       <NewInvoicePage />
@@ -771,7 +807,7 @@ const newInvoiceRoute = createRoute({
 
 const chargesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/charges',
+  path: '/manager/charges',
   component: () => (
     <ProtectedWrapper>
       <ChargesPage />
@@ -781,7 +817,7 @@ const chargesRoute = createRoute({
 
 const depositsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/deposits',
+  path: '/manager/deposits',
   component: () => (
     <ProtectedWrapper>
       <DepositsPage />
@@ -791,7 +827,7 @@ const depositsRoute = createRoute({
 
 const paymentPlansRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payment-plans',
+  path: '/manager/payment-plans',
   component: () => (
     <ProtectedWrapper>
       <PaymentPlansPage />
@@ -801,7 +837,7 @@ const paymentPlansRoute = createRoute({
 
 const newPaymentPlanRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payment-plans/new',
+  path: '/manager/payment-plans/new',
   component: () => (
     <ProtectedWrapper>
       <PaymentPlansPage />
@@ -811,7 +847,7 @@ const newPaymentPlanRoute = createRoute({
 
 const refundsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/refunds',
+  path: '/manager/refunds',
   component: () => (
     <ProtectedWrapper>
       <RefundsPage />
@@ -821,7 +857,7 @@ const refundsRoute = createRoute({
 
 const paymentMethodsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payment-methods',
+  path: '/manager/payment-methods',
   component: () => (
     <ProtectedWrapper>
       <PaymentMethodsPage />
@@ -832,7 +868,7 @@ const paymentMethodsRoute = createRoute({
 // Other Placeholders
 const ownersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/owners',
+  path: '/manager/owners',
   component: () => (
     <ProtectedWrapper>
       <OwnersPage />
@@ -842,7 +878,7 @@ const ownersRoute = createRoute({
 
 const accountingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting',
+  path: '/manager/accounting',
   component: () => (
     <ProtectedWrapper>
       <AccountingDashboardPage />
@@ -852,7 +888,7 @@ const accountingRoute = createRoute({
 
 const coaRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/chart-of-accounts',
+  path: '/manager/accounting/chart-of-accounts',
   component: () => (
     <ProtectedWrapper>
       <ChartOfAccountsPage />
@@ -862,7 +898,7 @@ const coaRoute = createRoute({
 
 const journalEntriesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/journal-entries',
+  path: '/manager/accounting/journal-entries',
   component: () => (
     <ProtectedWrapper>
       <JournalEntriesPage />
@@ -872,7 +908,7 @@ const journalEntriesRoute = createRoute({
 
 const generalLedgerRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/general-ledger',
+  path: '/manager/accounting/general-ledger',
   component: () => (
     <ProtectedWrapper>
       <GeneralLedgerPage />
@@ -882,7 +918,7 @@ const generalLedgerRoute = createRoute({
 
 const incomeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/income',
+  path: '/manager/accounting/income',
   component: () => (
     <ProtectedWrapper>
       <IncomePage />
@@ -892,7 +928,7 @@ const incomeRoute = createRoute({
 
 const expensesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/expenses',
+  path: '/manager/accounting/expenses',
   component: () => (
     <ProtectedWrapper>
       <ExpensesPage />
@@ -902,7 +938,7 @@ const expensesRoute = createRoute({
 
 const vendorBillsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/vendor-bills',
+  path: '/manager/accounting/vendor-bills',
   component: () => (
     <ProtectedWrapper>
       <VendorBillsPage />
@@ -912,7 +948,7 @@ const vendorBillsRoute = createRoute({
 
 const recurringTransactionsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/recurring',
+  path: '/manager/accounting/recurring',
   component: () => (
     <ProtectedWrapper>
       <RecurringTransactionsPage />
@@ -922,7 +958,7 @@ const recurringTransactionsRoute = createRoute({
 
 const bankAccountsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/bank-accounts',
+  path: '/manager/accounting/bank-accounts',
   component: () => (
     <ProtectedWrapper>
       <BankAccountsPage />
@@ -932,7 +968,7 @@ const bankAccountsRoute = createRoute({
 
 const bankReconciliationRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/reconciliation',
+  path: '/manager/accounting/reconciliation',
   component: () => (
     <ProtectedWrapper>
       <BankReconciliationPage />
@@ -942,7 +978,7 @@ const bankReconciliationRoute = createRoute({
 
 const budgetsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/budgets',
+  path: '/manager/accounting/budgets',
   component: () => (
     <ProtectedWrapper>
       <BudgetsPage />
@@ -952,7 +988,7 @@ const budgetsRoute = createRoute({
 
 const ownerStatementsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/owner-statements',
+  path: '/manager/accounting/owner-statements',
   component: () => (
     <ProtectedWrapper>
       <OwnerStatementsPage />
@@ -962,7 +998,7 @@ const ownerStatementsRoute = createRoute({
 
 const taxesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/taxes',
+  path: '/manager/accounting/taxes',
   component: () => (
     <ProtectedWrapper>
       <TaxesPage />
@@ -972,7 +1008,7 @@ const taxesRoute = createRoute({
 
 const financialReportsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/reports',
+  path: '/manager/accounting/reports',
   component: () => (
     <ProtectedWrapper>
       <FinancialReportsPage />
@@ -982,7 +1018,7 @@ const financialReportsRoute = createRoute({
 
 const yearEndRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/year-end',
+  path: '/manager/accounting/year-end',
   component: () => (
     <ProtectedWrapper>
       <YearEndPage />
@@ -992,7 +1028,7 @@ const yearEndRoute = createRoute({
 
 const maintenanceRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance',
+  path: '/manager/maintenance',
   component: () => (
     <ProtectedWrapper>
       <MaintenanceDashboardPage />
@@ -1002,7 +1038,7 @@ const maintenanceRoute = createRoute({
 
 const requestsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/requests',
+  path: '/manager/maintenance/requests',
   component: () => (
     <ProtectedWrapper>
       <RequestsPage />
@@ -1012,7 +1048,7 @@ const requestsRoute = createRoute({
 
 const newRequestRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/requests/new',
+  path: '/manager/maintenance/requests/new',
   component: () => (
     <ProtectedWrapper>
       <NewRequestPage />
@@ -1022,7 +1058,7 @@ const newRequestRoute = createRoute({
 
 const requestDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/requests/$id',
+  path: '/manager/maintenance/requests/$id',
   component: () => (
     <ProtectedWrapper>
       <RequestDetailsPage />
@@ -1032,7 +1068,7 @@ const requestDetailsRoute = createRoute({
 
 const workOrdersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/work-orders',
+  path: '/manager/maintenance/work-orders',
   component: () => (
     <ProtectedWrapper>
       <WorkOrdersPage />
@@ -1042,7 +1078,7 @@ const workOrdersRoute = createRoute({
 
 const workOrderDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/work-orders/$id',
+  path: '/manager/maintenance/work-orders/$id',
   component: () => (
     <ProtectedWrapper>
       <WorkOrderDetailsPage />
@@ -1052,7 +1088,7 @@ const workOrderDetailsRoute = createRoute({
 
 const preventiveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/preventive',
+  path: '/manager/maintenance/preventive',
   component: () => (
     <ProtectedWrapper>
       <PreventivePage />
@@ -1062,7 +1098,7 @@ const preventiveRoute = createRoute({
 
 const assetsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/assets',
+  path: '/manager/maintenance/assets',
   component: () => (
     <ProtectedWrapper>
       <AssetsPage />
@@ -1072,7 +1108,7 @@ const assetsRoute = createRoute({
 
 const inventoryRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/inventory',
+  path: '/manager/maintenance/inventory',
   component: () => (
     <ProtectedWrapper>
       <InventoryPage />
@@ -1082,7 +1118,7 @@ const inventoryRoute = createRoute({
 
 const vendorsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/vendors',
+  path: '/manager/vendors',
   component: () => (
     <ProtectedWrapper>
       <VendorsPage />
@@ -1092,7 +1128,7 @@ const vendorsRoute = createRoute({
 
 const vendorInvoicesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/vendors/invoices',
+  path: '/manager/vendors/invoices',
   component: () => (
     <ProtectedWrapper>
       <VendorInvoicesPage />
@@ -1102,7 +1138,7 @@ const vendorInvoicesRoute = createRoute({
 
 const inspectionsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/inspections',
+  path: '/manager/inspections',
   component: () => (
     <ProtectedWrapper>
       <InspectionsPage />
@@ -1112,7 +1148,7 @@ const inspectionsRoute = createRoute({
 
 const newInspectionRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/inspections/new',
+  path: '/manager/inspections/new',
   component: () => (
     <ProtectedWrapper>
       <NewInspectionPage />
@@ -1122,7 +1158,7 @@ const newInspectionRoute = createRoute({
 
 const maintenanceCalendarRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/calendar',
+  path: '/manager/maintenance/calendar',
   component: () => (
     <ProtectedWrapper>
       <MaintenanceCalendarPage />
@@ -1132,7 +1168,7 @@ const maintenanceCalendarRoute = createRoute({
 
 const maintenanceReportsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/maintenance/reports',
+  path: '/manager/maintenance/reports',
   component: () => (
     <ProtectedWrapper>
       <MaintenanceReportsPage />
@@ -1142,73 +1178,73 @@ const maintenanceReportsRoute = createRoute({
 
 const documentsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents',
+  path: '/manager/documents',
   component: () => (<ProtectedWrapper><DocsDashboardPage /></ProtectedWrapper>),
 });
 const docsAllRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/all',
+  path: '/manager/documents/all',
   component: () => (<ProtectedWrapper><DocsAllPage /></ProtectedWrapper>),
 });
 const docsFoldersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/folders',
+  path: '/manager/documents/folders',
   component: () => (<ProtectedWrapper><DocsFoldersPage /></ProtectedWrapper>),
 });
 const docsUploadRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/upload',
+  path: '/manager/documents/upload',
   component: () => (<ProtectedWrapper><DocsUploadPage /></ProtectedWrapper>),
 });
 const docsSignaturesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/signatures',
+  path: '/manager/documents/signatures',
   component: () => (<ProtectedWrapper><DocsSignaturesPage /></ProtectedWrapper>),
 });
 const docsSharedRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/shared',
+  path: '/manager/documents/shared',
   component: () => (<ProtectedWrapper><DocsSharedPage /></ProtectedWrapper>),
 });
 const docsTemplatesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/templates',
+  path: '/manager/documents/templates',
   component: () => (<ProtectedWrapper><DocsTemplatesPage /></ProtectedWrapper>),
 });
 const docsVersionsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/versions',
+  path: '/manager/documents/versions',
   component: () => (<ProtectedWrapper><DocsVersionsPage /></ProtectedWrapper>),
 });
 const docsRequestsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/requests',
+  path: '/manager/documents/requests',
   component: () => (<ProtectedWrapper><DocsRequestsPage /></ProtectedWrapper>),
 });
 const docsPermissionsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/permissions',
+  path: '/manager/documents/permissions',
   component: () => (<ProtectedWrapper><DocsPermissionsPage /></ProtectedWrapper>),
 });
 const docsAuditRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/audit',
+  path: '/manager/documents/audit',
   component: () => (<ProtectedWrapper><DocsAuditPage /></ProtectedWrapper>),
 });
 const docsArchiveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/archive',
+  path: '/manager/documents/archive',
   component: () => (<ProtectedWrapper><DocsArchivePage /></ProtectedWrapper>),
 });
 const docsSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/documents/settings',
+  path: '/manager/documents/settings',
   component: () => (<ProtectedWrapper><DocsSettingsPage /></ProtectedWrapper>),
 });
 
 const reportsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports',
+  path: '/manager/reports',
   component: () => (
     <ProtectedWrapper>
       <ReportsPage />
@@ -1218,77 +1254,77 @@ const reportsRoute = createRoute({
 
 const reportsExecutiveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/executive',
+  path: '/manager/reports/executive',
   component: () => (<ProtectedWrapper><ExecutiveDashboard /></ProtectedWrapper>),
 });
 const reportsDashboardsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/dashboards',
+  path: '/manager/reports/dashboards',
   component: () => (<ProtectedWrapper><DashboardBuilder /></ProtectedWrapper>),
 });
 const reportsPropertiesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/properties',
+  path: '/manager/reports/properties',
   component: () => (<ProtectedWrapper><PropertyAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsFinancialRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/financial',
+  path: '/manager/reports/financial',
   component: () => (<ProtectedWrapper><FinancialAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsTenantsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/tenants',
+  path: '/manager/reports/tenants',
   component: () => (<ProtectedWrapper><TenantAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsLeasingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/leasing',
+  path: '/manager/reports/leasing',
   component: () => (<ProtectedWrapper><LeasingAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsMaintenanceRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/maintenance',
+  path: '/manager/reports/maintenance',
   component: () => (<ProtectedWrapper><MaintenanceAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsOwnersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/owners',
+  path: '/manager/reports/owners',
   component: () => (<ProtectedWrapper><OwnerAnalyticsPage /></ProtectedWrapper>),
 });
 const reportsExplorerRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/explorer',
+  path: '/manager/reports/explorer',
   component: () => (<ProtectedWrapper><DataExplorer /></ProtectedWrapper>),
 });
 const reportsCustomRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/custom',
+  path: '/manager/reports/custom',
   component: () => (<ProtectedWrapper><CustomReports /></ProtectedWrapper>),
 });
 const reportsSavedRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/saved',
+  path: '/manager/reports/saved',
   component: () => (<ProtectedWrapper><SavedReports /></ProtectedWrapper>),
 });
 const reportsScheduledRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/scheduled',
+  path: '/manager/reports/scheduled',
   component: () => (<ProtectedWrapper><ScheduledReports /></ProtectedWrapper>),
 });
 const reportsForecastRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/forecast',
+  path: '/manager/reports/forecast',
   component: () => (<ProtectedWrapper><ForecastingPage /></ProtectedWrapper>),
 });
 const reportsExportsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/exports',
+  path: '/manager/reports/exports',
   component: () => (<ProtectedWrapper><ExportCenter /></ProtectedWrapper>),
 });
 const reportsSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/settings',
+  path: '/manager/reports/settings',
   component: () => (<ProtectedWrapper><AnalyticsSettingsPage /></ProtectedWrapper>),
 });
 
@@ -1576,7 +1612,7 @@ const tenantPaymentsHistoryRoute = createRoute({
 
 const commDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication',
+  path: '/manager/communication',
   component: () => (
     <ProtectedWrapper>
       <CommDashboardPage />
@@ -1586,7 +1622,7 @@ const commDashboardRoute = createRoute({
 
 const commInboxRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/inbox',
+  path: '/manager/communication/inbox',
   component: () => (
     <ProtectedWrapper>
       <CommInboxPage />
@@ -1596,7 +1632,7 @@ const commInboxRoute = createRoute({
 
 const commConversationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/conversations',
+  path: '/manager/communication/conversations',
   component: () => (
     <ProtectedWrapper>
       <CommConversationsPage />
@@ -1606,7 +1642,7 @@ const commConversationsRoute = createRoute({
 
 const commEmailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/email',
+  path: '/manager/communication/email',
   component: () => (
     <ProtectedWrapper>
       <CommEmailPage />
@@ -1616,7 +1652,7 @@ const commEmailRoute = createRoute({
 
 const commSMSRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/sms',
+  path: '/manager/communication/sms',
   component: () => (
     <ProtectedWrapper>
       <CommSMSPage />
@@ -1626,7 +1662,7 @@ const commSMSRoute = createRoute({
 
 const commAnnouncementsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/announcements',
+  path: '/manager/communication/announcements',
   component: () => (
     <ProtectedWrapper>
       <CommAnnouncementsPage />
@@ -1636,7 +1672,7 @@ const commAnnouncementsRoute = createRoute({
 
 const commCampaignsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/campaigns',
+  path: '/manager/communication/campaigns',
   component: () => (
     <ProtectedWrapper>
       <CommCampaignsPage />
@@ -1646,7 +1682,7 @@ const commCampaignsRoute = createRoute({
 
 const commTemplatesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/templates',
+  path: '/manager/communication/templates',
   component: () => (
     <ProtectedWrapper>
       <CommTemplatesPage />
@@ -1656,7 +1692,7 @@ const commTemplatesRoute = createRoute({
 
 const commContactsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/contacts',
+  path: '/manager/communication/contacts',
   component: () => (
     <ProtectedWrapper>
       <CommContactsPage />
@@ -1666,7 +1702,7 @@ const commContactsRoute = createRoute({
 
 const commNotificationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/notifications',
+  path: '/manager/communication/notifications',
   component: () => (
     <ProtectedWrapper>
       <CommNotificationsPage />
@@ -1676,7 +1712,7 @@ const commNotificationsRoute = createRoute({
 
 const commScheduledRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/scheduled',
+  path: '/manager/communication/scheduled',
   component: () => (
     <ProtectedWrapper>
       <CommScheduledPage />
@@ -1686,7 +1722,7 @@ const commScheduledRoute = createRoute({
 
 const commActivityRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/activity',
+  path: '/manager/communication/activity',
   component: () => (
     <ProtectedWrapper>
       <CommActivityPage />
@@ -1696,7 +1732,7 @@ const commActivityRoute = createRoute({
 
 const commSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/communication/settings',
+  path: '/manager/communication/settings',
   component: () => (
     <ProtectedWrapper>
       <CommSettingsPage />
@@ -1716,22 +1752,22 @@ const aiSettingsRoute = createRoute({
 });
 const adminDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin',
+  path: '/manager/admin',
   component: () => (<ProtectedWrapper><AdminDashboard /></ProtectedWrapper>),
 });
 const adminCompanySettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/company-settings',
+  path: '/manager/admin/company-settings',
   component: () => (<ProtectedWrapper><CompanySettingsPage /></ProtectedWrapper>),
 });
 const adminUsersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/users',
+  path: '/manager/admin/users',
   component: () => (<ProtectedWrapper><UsersPage /></ProtectedWrapper>),
 });
 const adminTeamsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/teams',
+  path: '/manager/admin/teams',
   component: () => (<ProtectedWrapper><TeamsPage /></ProtectedWrapper>),
 });
 
@@ -1766,73 +1802,73 @@ const AccessTemplatesPage: React.FC = () => {
 
 const adminTemplatesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/templates',
+  path: '/manager/admin/templates',
   component: () => (<ProtectedWrapper><AccessTemplatesPage /></ProtectedWrapper>),
 });
 
 const adminRolesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/roles',
+  path: '/manager/admin/roles',
   component: () => (<ProtectedWrapper><RolesPage /></ProtectedWrapper>),
 });
 const adminPropertiesSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/properties-settings',
+  path: '/manager/admin/properties-settings',
   component: () => (<ProtectedWrapper><PropertiesSettingsPage /></ProtectedWrapper>),
 });
 const adminFinancialRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/financial',
+  path: '/manager/admin/financial',
   component: () => (<ProtectedWrapper><FinancialSettingsPage /></ProtectedWrapper>),
 });
 const adminPaymentSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/payment-settings',
+  path: '/manager/admin/payment-settings',
   component: () => (<ProtectedWrapper><PaymentSettingsPage /></ProtectedWrapper>),
 });
 const adminNotificationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/notifications',
+  path: '/manager/admin/notifications',
   component: () => (<ProtectedWrapper><NotificationSettingsPage /></ProtectedWrapper>),
 });
 const adminIntegrationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/integrations',
+  path: '/manager/admin/integrations',
   component: () => (<ProtectedWrapper><IntegrationsPage /></ProtectedWrapper>),
 });
 const adminApiRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/api',
+  path: '/manager/admin/api',
   component: () => (<ProtectedWrapper><ApiManagementPage /></ProtectedWrapper>),
 });
 const adminWebhooksRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/webhooks',
+  path: '/manager/admin/webhooks',
   component: () => (<ProtectedWrapper><WebhooksPage /></ProtectedWrapper>),
 });
 const adminSecurityRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/security',
+  path: '/manager/admin/security',
   component: () => (<ProtectedWrapper><SecurityPage /></ProtectedWrapper>),
 });
 const adminAuditRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/audit',
+  path: '/manager/admin/audit',
   component: () => (<ProtectedWrapper><AuditLogsPage /></ProtectedWrapper>),
 });
 const adminActivityRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/activity',
+  path: '/manager/admin/activity',
   component: () => (<ProtectedWrapper><ActivityLogsPage /></ProtectedWrapper>),
 });
 const adminBillingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/billing',
+  path: '/manager/admin/billing',
   component: () => (<ProtectedWrapper><BillingPage /></ProtectedWrapper>),
 });
 const adminPreferencesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin/preferences',
+  path: '/manager/admin/preferences',
   component: () => (<ProtectedWrapper><SystemPreferencesPage /></ProtectedWrapper>),
 });
 const settingsRoute = createRoute({
@@ -1878,7 +1914,7 @@ const CompaniesPage: React.FC = () => {
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies' }]}
         action={{
           label: 'Create Company',
-          onClick: () => navigate({ to: '/companies/new' }),
+          onClick: () => navigate({ to: '/super-admin/companies/new' }),
           icon: <Plus className="w-4 h-4" />
         }}
       />
@@ -1907,7 +1943,7 @@ const CompaniesPage: React.FC = () => {
               {companies.map((c: any) => (
                 <tr key={c.id} className="hover:bg-accent/40 transition">
                   <td className="p-4">
-                    <div className="font-extrabold text-sm text-primary cursor-pointer hover:underline" onClick={() => navigate({ to: `/companies/details` })}>{c.name}</div>
+                    <div className="font-extrabold text-sm text-primary cursor-pointer hover:underline" onClick={() => navigate({ to: `/super-admin/companies/details` })}>{c.name}</div>
                     <div className="text-[10px] text-muted-foreground font-semibold">{c.businessName} • {c.website}</div>
                   </td>
                   <td className="p-4 font-mono font-bold text-foreground/80">{c.code}</td>
@@ -1925,7 +1961,7 @@ const CompaniesPage: React.FC = () => {
                   </td>
                   <td className="p-4 text-muted-foreground font-mono">{c.date}</td>
                   <td className="p-4 text-right space-x-1 whitespace-nowrap">
-                    <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/companies/details` })}><Eye className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/super-admin/companies/details` })}><Eye className="w-4 h-4" /></Button>
                     {c.status === 'Active' ? (
                       <Button variant="ghost" size="icon" onClick={() => handleStatusChange(c.id, 'Suspended')} className="text-rose-500 hover:text-rose-600"><Ban className="w-4 h-4" /></Button>
                     ) : (
@@ -2018,7 +2054,7 @@ const NewCompanyPage: React.FC = () => {
 
     setSuccess(true);
     setTimeout(() => {
-      navigate({ to: '/companies' });
+      navigate({ to: '/super-admin/companies' });
     }, 1200);
   };
 
@@ -2027,7 +2063,7 @@ const NewCompanyPage: React.FC = () => {
       <PageHeader
         title="Create New Company"
         description="Register a new subscriber tenant onto the SaaS platform."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'New' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/super-admin/companies' }, { label: 'New' }]}
       />
       {success && (
         <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400 p-4 rounded-xl text-xs font-semibold text-center">
@@ -2074,7 +2110,7 @@ const NewCompanyPage: React.FC = () => {
           </div>
         </div>
         <div className="border-t pt-4 flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={() => navigate({ to: '/companies' })}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => navigate({ to: '/super-admin/companies' })}>Cancel</Button>
           <Button type="submit">Create Company</Button>
         </div>
       </form>
@@ -2089,7 +2125,7 @@ const CompanyDetailsPage: React.FC = () => {
       <PageHeader
         title="Company Profile Details"
         description="Detailed review of registered companies, account subscription plan status, usage stats and limits."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'Details' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/super-admin/companies' }, { label: 'Details' }]}
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-card border rounded-xl p-6 shadow-sm space-y-4 lg:col-span-2">
@@ -2187,7 +2223,7 @@ const CompanyUsersPage: React.FC = () => {
       <PageHeader
         title="Company Registered Users"
         description="Manage seat allocations, account configurations, and profiles for subscriber companies."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'Users' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/super-admin/companies' }, { label: 'Users' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -2234,7 +2270,7 @@ const CompanySubscriptionPage: React.FC = () => {
       <PageHeader
         title="Company Plan Subscription"
         description="SaaS billing settings, plan parameters, invoices, and credit card updates."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'Subscription' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/super-admin/companies' }, { label: 'Subscription' }]}
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-card border rounded-xl p-6 shadow-sm space-y-4 lg:col-span-2">
@@ -2291,7 +2327,7 @@ const CompanyUsagePage: React.FC = () => {
       <PageHeader
         title="Company Resource Usage"
         description="Detailed resource consumption, database usage, units managed, and bandwidth statistics."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/companies' }, { label: 'Usage' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Companies', href: '/super-admin/companies' }, { label: 'Usage' }]}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card border rounded-xl p-6 shadow-sm space-y-3">
@@ -2549,7 +2585,7 @@ const ActiveSubscriptionsPage: React.FC = () => {
       <PageHeader
         title="Active Company Subscriptions"
         description="Monitor active SaaS company subscribers, next billing details, and trial status."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/subscriptions/plans' }, { label: 'Active' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/super-admin/subscriptions/plans' }, { label: 'Active' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -2604,7 +2640,7 @@ const SubscriptionInvoicesPage: React.FC = () => {
       <PageHeader
         title="Billing Invoices Ledger"
         description="Monitor system-wide invoices, client company receipts, and tax allocations."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/subscriptions/plans' }, { label: 'Invoices' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/super-admin/subscriptions/plans' }, { label: 'Invoices' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -2650,7 +2686,7 @@ const SubscriptionPaymentsPage: React.FC = () => {
       <PageHeader
         title="Gateway Payments Ledger"
         description="Verify Stripe credit card payouts, transaction statuses, and refund records."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/subscriptions/plans' }, { label: 'Payments' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/super-admin/subscriptions/plans' }, { label: 'Payments' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -2717,7 +2753,7 @@ const SubscriptionCouponsPage: React.FC = () => {
       <PageHeader
         title="Promotional Coupons"
         description="Publish discount coupons, campaign codes, and subscription cost overrides."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/subscriptions/plans' }, { label: 'Coupons' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Subscriptions', href: '/super-admin/subscriptions/plans' }, { label: 'Coupons' }]}
         action={{
           label: 'Create Coupon Code',
           onClick: () => setShowForm(!showForm),
@@ -3513,7 +3549,7 @@ const AmenitiesPage: React.FC = () => {
       <PageHeader
         title="Properties Amenities"
         description="Configure unit/building level amenities and pricing for tenant leases."
-        breadcrumbs={[{ label: 'Properties', href: '/properties' }, { label: 'Amenities' }]}
+        breadcrumbs={[{ label: 'Properties', href: '/manager/properties' }, { label: 'Amenities' }]}
         action={{
           label: editingId ? 'Edit Amenity' : 'Create Amenity',
           onClick: () => {
@@ -3715,7 +3751,7 @@ const FloorPlansPage: React.FC = () => {
       <PageHeader
         title="Property Floor Plans"
         description="Manage layouts, size measurements, and rent structures of floor plans."
-        breadcrumbs={[{ label: 'Properties', href: '/properties' }, { label: 'Floor Plans' }]}
+        breadcrumbs={[{ label: 'Properties', href: '/manager/properties' }, { label: 'Floor Plans' }]}
         action={{
           label: editingId ? 'Edit Layout' : 'Create Floor Plan',
           onClick: () => {
@@ -3921,7 +3957,7 @@ const ScreeningPage: React.FC = () => {
       <PageHeader
         title="Tenant Screening Directory"
         description="Verify credit score, rental history background checks, and employment details of lease applicants."
-        breadcrumbs={[{ label: 'Leasing', href: '/leasing' }, { label: 'Screening' }]}
+        breadcrumbs={[{ label: 'Leasing', href: '/manager/leasing' }, { label: 'Screening' }]}
         action={{
           label: editingId ? 'Edit Screening' : 'New Screening Check',
           onClick: () => {
@@ -4077,7 +4113,7 @@ const TrustAccountsPage: React.FC = () => {
       <PageHeader
         title="Trust Accounts Ledger"
         description="Fiduciary management of security deposits and owner operations reserves escrow accounts."
-        breadcrumbs={[{ label: 'Accounting', href: '/accounting' }, { label: 'Trust Accounts' }]}
+        breadcrumbs={[{ label: 'Accounting', href: '/manager/accounting' }, { label: 'Trust Accounts' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4116,7 +4152,7 @@ const LateFeesPage: React.FC = () => {
       <PageHeader
         title="Late Fee Configuration"
         description="Configure late payment fees rules, structures, and grace period settings."
-        breadcrumbs={[{ label: 'Rent Collection', href: '/rent' }, { label: 'Late Fees' }]}
+        breadcrumbs={[{ label: 'Rent Collection', href: '/manager/rent' }, { label: 'Late Fees' }]}
       />
       <div className="bg-card border rounded-xl p-6 shadow-sm space-y-6">
         <h2 className="text-sm font-extrabold uppercase tracking-wide border-b pb-2">Default Late Fee Policy Settings</h2>
@@ -4164,7 +4200,7 @@ const ManagerTenantDocumentsPage: React.FC = () => {
       <PageHeader
         title="Tenant Documents categories"
         description="Access leases, notices, and income agreements uploaded by tenant residents."
-        breadcrumbs={[{ label: 'Tenants', href: '/tenants' }, { label: 'Documents' }]}
+        breadcrumbs={[{ label: 'Tenants', href: '/manager/tenants' }, { label: 'Documents' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4208,7 +4244,7 @@ const OwnersStatementsPage: React.FC = () => {
       <PageHeader
         title="Owner Financial Statements"
         description="Fiduciary records of property income statements, expense logs, and net cash balances."
-        breadcrumbs={[{ label: 'Owners', href: '/owners' }, { label: 'Statements' }]}
+        breadcrumbs={[{ label: 'Owners', href: '/manager/owners' }, { label: 'Statements' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4255,7 +4291,7 @@ const RentRollReportPage: React.FC = () => {
       <PageHeader
         title="Rent Roll Report Ledger"
         description="Comprehensive list of properties, tenant names, lease schedules, and monthly rent balances."
-        breadcrumbs={[{ label: 'Reports', href: '/reports' }, { label: 'Rent Roll' }]}
+        breadcrumbs={[{ label: 'Reports', href: '/manager/reports' }, { label: 'Rent Roll' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4301,7 +4337,7 @@ const OccupancyReportPage: React.FC = () => {
       <PageHeader
         title="Occupancy & Vacancy Report"
         description="Monitor rental occupancy rates, vacancy statistics, and unit counts by building."
-        breadcrumbs={[{ label: 'Reports', href: '/reports' }, { label: 'Occupancy' }]}
+        breadcrumbs={[{ label: 'Reports', href: '/manager/reports' }, { label: 'Occupancy' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4345,7 +4381,7 @@ const DelinquencyReportPage: React.FC = () => {
       <PageHeader
         title="Delinquent Payments Ledger"
         description="Verify late property rent payments, accrued late fee balances, and days delinquent."
-        breadcrumbs={[{ label: 'Reports', href: '/reports' }, { label: 'Delinquency' }]}
+        breadcrumbs={[{ label: 'Reports', href: '/manager/reports' }, { label: 'Delinquency' }]}
       />
       <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -4380,67 +4416,67 @@ const DelinquencyReportPage: React.FC = () => {
 // --- ROUTE INSTANTIATIONS FOR NEW VIEWS ---
 const companiesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies',
+  path: '/super-admin/companies',
   component: () => (<ProtectedWrapper><CompaniesPage /></ProtectedWrapper>),
 });
 const newCompanyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies/new',
+  path: '/super-admin/companies/new',
   component: () => (<ProtectedWrapper><NewCompanyPage /></ProtectedWrapper>),
 });
 const companyDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies/details',
+  path: '/super-admin/companies/details',
   component: () => (<ProtectedWrapper><CompanyDetailsPage /></ProtectedWrapper>),
 });
 const companyUsersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies/users',
+  path: '/super-admin/companies/users',
   component: () => (<ProtectedWrapper><CompanyUsersPage /></ProtectedWrapper>),
 });
 const companySubscriptionRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies/subscription',
+  path: '/super-admin/companies/subscription',
   component: () => (<ProtectedWrapper><CompanySubscriptionPage /></ProtectedWrapper>),
 });
 const companyUsageRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/companies/usage',
+  path: '/super-admin/companies/usage',
   component: () => (<ProtectedWrapper><CompanyUsagePage /></ProtectedWrapper>),
 });
 const subscriptionsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions',
+  path: '/super-admin/subscriptions',
   component: () => (<ProtectedWrapper><SubscriptionPlansPage /></ProtectedWrapper>),
 });
 const subscriptionsPlansRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions/plans',
+  path: '/super-admin/subscriptions/plans',
   component: () => (<ProtectedWrapper><SubscriptionPlansPage /></ProtectedWrapper>),
 });
 const subscriptionsActiveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions/active',
+  path: '/super-admin/subscriptions/active',
   component: () => (<ProtectedWrapper><ActiveSubscriptionsPage /></ProtectedWrapper>),
 });
 const subscriptionsInvoicesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions/invoices',
+  path: '/super-admin/subscriptions/invoices',
   component: () => (<ProtectedWrapper><SubscriptionInvoicesPage /></ProtectedWrapper>),
 });
 const subscriptionsPaymentsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions/payments',
+  path: '/super-admin/subscriptions/payments',
   component: () => (<ProtectedWrapper><SubscriptionPaymentsPage /></ProtectedWrapper>),
 });
 const subscriptionsCouponsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/subscriptions/coupons',
+  path: '/super-admin/subscriptions/coupons',
   component: () => (<ProtectedWrapper><SubscriptionCouponsPage /></ProtectedWrapper>),
 });
 const platformUsersRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-users',
+  path: '/super-admin/platform-users',
   component: () => (<ProtectedWrapper><PlatformUsersPage /></ProtectedWrapper>),
 });
 const supportTicketsRoute = createRoute({
@@ -4460,52 +4496,52 @@ const supportContactRoute = createRoute({
 });
 const platformSettingsGeneralRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-settings/general',
+  path: '/super-admin/platform-settings/general',
   component: () => (<ProtectedWrapper><PlatformSettingsGeneralView /></ProtectedWrapper>),
 });
 const platformSettingsEmailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-settings/email',
+  path: '/super-admin/platform-settings/email',
   component: () => (<ProtectedWrapper><PlatformSettingsEmailView /></ProtectedWrapper>),
 });
 const platformSettingsStorageRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-settings/storage',
+  path: '/super-admin/platform-settings/storage',
   component: () => (<ProtectedWrapper><PlatformSettingsStorageView /></ProtectedWrapper>),
 });
 const platformSettingsBrandingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-settings/branding',
+  path: '/super-admin/platform-settings/branding',
   component: () => (<ProtectedWrapper><PlatformSettingsBrandingView /></ProtectedWrapper>),
 });
 const platformIntegrationsConnectedRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-integrations/connected',
+  path: '/super-admin/platform-integrations/connected',
   component: () => (<ProtectedWrapper><PlatformIntegrationsConnectedView /></ProtectedWrapper>),
 });
 const platformIntegrationsKeysRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-integrations/keys',
+  path: '/super-admin/platform-integrations/keys',
   component: () => (<ProtectedWrapper><PlatformIntegrationsKeysView /></ProtectedWrapper>),
 });
 const platformIntegrationsWebhooksRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-integrations/webhooks',
+  path: '/super-admin/platform-integrations/webhooks',
   component: () => (<ProtectedWrapper><PlatformIntegrationsWebhooksView /></ProtectedWrapper>),
 });
 const platformSecurityAuditRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-security/audit',
+  path: '/super-admin/platform-security/audit',
   component: () => (<ProtectedWrapper><PlatformSecurityAuditView /></ProtectedWrapper>),
 });
 const platformSecurityLoginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-security/login-history',
+  path: '/super-admin/platform-security/login-history',
   component: () => (<ProtectedWrapper><PlatformSecurityLoginView /></ProtectedWrapper>),
 });
 const platformSecurityPoliciesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/platform-security/policies',
+  path: '/super-admin/platform-security/policies',
   component: () => (<ProtectedWrapper><PlatformSecurityPoliciesView /></ProtectedWrapper>),
 });
 const platformAnalyticsRoute = createRoute({
@@ -4515,68 +4551,89 @@ const platformAnalyticsRoute = createRoute({
 });
 const amenitiesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/amenities',
+  path: '/manager/properties/amenities',
   component: () => (<ProtectedWrapper><AmenitiesPage /></ProtectedWrapper>),
 });
 const floorPlansRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/properties/floor-plans',
+  path: '/manager/properties/floor-plans',
   component: () => (<ProtectedWrapper><FloorPlansPage /></ProtectedWrapper>),
 });
 const screeningRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/screening',
+  path: '/manager/leasing/screening',
   component: () => (<ProtectedWrapper><ScreeningPage /></ProtectedWrapper>),
 });
 const moveInRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/move-in',
+  path: '/manager/leasing/move-in',
   component: () => (<ProtectedWrapper><MoveInOutPage type="Move In" /></ProtectedWrapper>),
 });
 const moveOutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/leasing/move-out',
+  path: '/manager/leasing/move-out',
   component: () => (<ProtectedWrapper><MoveInOutPage type="Move Out" /></ProtectedWrapper>),
 });
 const managerTenantDocumentsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tenants/documents',
+  path: '/manager/tenants/documents',
   component: () => (<ProtectedWrapper><ManagerTenantDocumentsPage /></ProtectedWrapper>),
 });
 const ownersStatementsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/owners/statements',
+  path: '/manager/owners/statements',
   component: () => (<ProtectedWrapper><OwnersStatementsPage /></ProtectedWrapper>),
 });
 const lateFeesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/rent/late-fees',
+  path: '/manager/rent/late-fees',
   component: () => (<ProtectedWrapper><LateFeesPage /></ProtectedWrapper>),
 });
 const trustAccountsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/accounting/trust-accounts',
+  path: '/manager/accounting/trust-accounts',
   component: () => (<ProtectedWrapper><TrustAccountsPage /></ProtectedWrapper>),
 });
 const rentRollReportRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/rent-roll',
+  path: '/manager/reports/rent-roll',
   component: () => (<ProtectedWrapper><RentRollReportPage /></ProtectedWrapper>),
 });
 const occupancyReportRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/occupancy',
+  path: '/manager/reports/occupancy',
   component: () => (<ProtectedWrapper><OccupancyReportPage /></ProtectedWrapper>),
 });
 const delinquencyReportRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/reports/delinquency',
+  path: '/manager/reports/delinquency',
   component: () => (<ProtectedWrapper><DelinquencyReportPage /></ProtectedWrapper>),
+});
+const superAdminIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/super-admin',
+  component: () => (
+    <ProtectedWrapper>
+      <SuperAdminDashboardPage />
+    </ProtectedWrapper>
+  ),
+});
+
+const managerIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/manager',
+  component: () => (
+    <ProtectedWrapper>
+      <DashboardPage />
+    </ProtectedWrapper>
+  ),
 });
 
 // --- REGISTER TREE ---
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  superAdminIndexRoute,
+  managerIndexRoute,
   landingRoute,
   loginRoute,
   forgotPasswordRoute,

@@ -54,7 +54,7 @@ export const NewRequestPage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service-requests-list'] });
-      navigate({ to: '/maintenance/requests' });
+      navigate({ to: '/manager/maintenance/requests' });
     },
   });
 
@@ -167,7 +167,7 @@ export const NewRequestPage: React.FC = () => {
           </div>
 
           <div className="flex justify-end space-x-2 pt-4 border-t">
-            <Button variant="outline" type="button" onClick={() => navigate({ to: '/maintenance/requests' })}>Cancel</Button>
+            <Button variant="outline" type="button" onClick={() => navigate({ to: '/manager/maintenance/requests' })}>Cancel</Button>
             <Button type="submit" disabled={createMutation.isPending}>
               {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Submit Request

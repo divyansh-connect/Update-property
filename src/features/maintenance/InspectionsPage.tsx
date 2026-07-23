@@ -94,7 +94,7 @@ export const InspectionsPage: React.FC = () => {
         ]}
         action={{
           label: 'Record Inspection Wizard',
-          onClick: () => navigate({ to: '/inspections/new' }),
+          onClick: () => navigate({ to: '/manager/inspections/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

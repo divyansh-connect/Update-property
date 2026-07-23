@@ -75,7 +75,7 @@ export const DocsAllPage: React.FC = () => {
         title="All Documents Library"
         description="Browse, search, filter, and manage all uploaded files across properties, tenants, and leases."
         breadcrumbs={[{ label: 'Documents', href: '/documents' }, { label: 'All Documents' }]}
-        action={{ label: 'Upload Document', onClick: () => navigate({ to: '/documents/upload' }), icon: <Upload className="w-4 h-4" /> }}
+        action={{ label: 'Upload Document', onClick: () => navigate({ to: '/manager/documents/upload' }), icon: <Upload className="w-4 h-4" /> }}
       />
 
       {/* Role Filters */}

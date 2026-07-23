@@ -11,7 +11,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { CheckCircle, AlertTriangle, User, Calendar, Clock, Lock } from 'lucide-react';
 
 export const RequestDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/maintenance/requests/$id' });
+  const { id } = useParams({ from: '/manager/maintenance/requests/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -99,7 +99,7 @@ export const RequestDetailsPage: React.FC = () => {
               Mark Completed
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/maintenance/requests' })}>Back to List</Button>
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/manager/maintenance/requests' })}>Back to List</Button>
         </div>
       </div>
 

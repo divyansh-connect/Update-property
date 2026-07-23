@@ -12,6 +12,9 @@ import { Button } from '../../components/ui/Button';
 import { CurrencyInput } from '../../components/Phase4Components';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
+import { PaymentTypeSelector } from './components/PaymentTypeSelector';
+import { CashReceiptModal } from './components/CashReceiptModal';
+
 const payFormSchema = zod.object({
   tenantId: zod.string().min(1, 'Tenant is required'),
   amount: zod.number().min(1, 'Amount must be positive'),
@@ -33,6 +36,10 @@ export const NewPaymentPage: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
+  const [paymentType, setPaymentType] = useState<'full' | 'partial'>('full');
+  const [partialAmount, setPartialAmount] = useState(700);
+  const [isCashReceiptOpen, setIsCashReceiptOpen] = useState(false);
+  const [cashReceiptData, setCashReceiptData] = useState<any>(null);
 
   // Queries
   const { data: tenants = [] } = useQuery({ queryKey: ['tenants'], queryFn: () => api.tenant.getAll() });
@@ -75,12 +82,31 @@ export const NewPaymentPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments-list'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/payments' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/payments' }), 2000);
     },
   });
 
   const onSubmit = (values: PayFormInputs) => {
-    recordMutation.mutate(values);
+    const finalAmount = paymentType === 'full' ? values.amount : partialAmount;
+    const finalPayload = { ...values, amount: finalAmount };
+
+    if (values.paymentMethod === 'Cash') {
+      const data = {
+        receiptNumber: `CSH-${Date.now().toString().slice(-6)}`,
+        tenantName: selectedTenant ? `${selectedTenant.firstName} ${selectedTenant.lastName}` : 'Tenant',
+        tenantPhone: selectedTenant?.phone || '+1 (555) 234-5678',
+        tenantEmail: selectedTenant?.email || 'tenant@skyline.com',
+        propertyName: selectedUnit ? selectedUnit.propertyName : 'Skyline Heights',
+        unitNumber: selectedUnit ? selectedUnit.unitNumber : '101',
+        amountPaid: finalAmount,
+        paymentDate: values.paidDate,
+        receivedBy: 'Office Collection Manager',
+        notes: values.notes || 'Cash Rent Deposit',
+      };
+      setCashReceiptData(data);
+      setIsCashReceiptOpen(true);
+    }
+    recordMutation.mutate(finalPayload);
   };
 
   return (
@@ -131,7 +157,15 @@ export const NewPaymentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* --- SECTION 2: PAYMENT DETAILS --- */}
+        {/* --- SECTION 2: PAYMENT TYPE & DETAILS --- */}
+        <PaymentTypeSelector
+          totalDue={watch('amount') || 1400}
+          paymentType={paymentType}
+          partialAmount={partialAmount}
+          onPaymentTypeChange={setPaymentType}
+          onPartialAmountChange={setPartialAmount}
+        />
+
         <div className="space-y-4">
           <h3 className="font-bold text-sm text-foreground uppercase border-b pb-2">Payment Parameters</h3>
           
@@ -195,7 +229,7 @@ export const NewPaymentPage: React.FC = () => {
 
         {/* FOOTER ACTIONS */}
         <div className="flex justify-between items-center pt-6 border-t">
-          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/payments' })} className="flex items-center gap-1">
+          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/manager/payments' })} className="flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Cancel
           </Button>
           <Button type="submit" disabled={recordMutation.isPending}>
@@ -205,6 +239,12 @@ export const NewPaymentPage: React.FC = () => {
         </div>
 
       </form>
+
+      <CashReceiptModal
+        isOpen={isCashReceiptOpen}
+        onClose={() => setIsCashReceiptOpen(false)}
+        receiptData={cashReceiptData}
+      />
     </div>
   );
 };

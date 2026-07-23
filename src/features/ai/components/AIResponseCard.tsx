@@ -21,17 +21,17 @@ export const AIResponseCard: React.FC<AIResponseCardProps> = ({
     const act = action.toLowerCase();
     if (act.includes('reminder')) {
       alert('Late payment reminder sent successfully to the delinquent tenants!');
-      navigate({ to: '/communication/sms' });
+      navigate({ to: '/manager/communication/sms' });
     } else if (act.includes('invoice')) {
-      navigate({ to: '/invoices' });
+      navigate({ to: '/manager/invoices' });
     } else if (act.includes('lease')) {
-      navigate({ to: '/leasing/leases' });
+      navigate({ to: '/manager/leasing/leases' });
     } else if (act.includes('property')) {
-      navigate({ to: '/properties' });
+      navigate({ to: '/manager/properties' });
     } else if (act.includes('maintenance')) {
-      navigate({ to: '/maintenance' });
+      navigate({ to: '/manager/maintenance' });
     } else if (act.includes('report')) {
-      navigate({ to: '/reports' });
+      navigate({ to: '/manager/reports' });
     } else {
       alert(`Triggered action: ${action}`);
     }
@@ -40,15 +40,15 @@ export const AIResponseCard: React.FC<AIResponseCardProps> = ({
   const handleRecordClick = (record: string) => {
     const rec = record.toLowerCase();
     if (rec.includes('jordan') || rec.includes('spears') || rec.includes('johnson')) {
-      navigate({ to: '/tenants' });
+      navigate({ to: '/manager/tenants' });
     } else if (rec.includes('villas') || rec.includes('loft') || rec.includes('heights')) {
-      navigate({ to: '/properties' });
+      navigate({ to: '/manager/properties' });
     } else if (rec.includes('apt') || rec.includes('unit')) {
-      navigate({ to: '/units' });
+      navigate({ to: '/manager/units' });
     } else if (rec.includes('inv-')) {
-      navigate({ to: '/invoices' });
+      navigate({ to: '/manager/invoices' });
     } else if (rec.includes('financial') || rec.includes('roll') || rec.includes('statement')) {
-      navigate({ to: '/reports' });
+      navigate({ to: '/manager/reports' });
     } else {
       navigate({ to: '/' });
     }

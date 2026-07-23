@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const TenantDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/tenants/$id' });
+  const { id } = useParams({ from: '/manager/tenants/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -97,7 +97,7 @@ export const TenantDetailsPage: React.FC = () => {
   return (
     <div className="space-y-6 text-foreground">
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/tenants' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/manager/tenants' })}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <span className="text-sm font-semibold text-muted-foreground">Back to Tenant Directory</span>
@@ -123,7 +123,7 @@ export const TenantDetailsPage: React.FC = () => {
           <Button variant="outline" size="sm" onClick={() => navigate({ to: `/tenants/${tenant.id}/edit` })}>
             Edit Profile
           </Button>
-          <Button size="sm" onClick={() => navigate({ to: '/leasing/leases' })} className="flex items-center gap-1">
+          <Button size="sm" onClick={() => navigate({ to: '/manager/leasing/leases' })} className="flex items-center gap-1">
             Renew Lease
           </Button>
         </div>
@@ -264,7 +264,7 @@ export const TenantDetailsPage: React.FC = () => {
               ) : (
                 <Card className="p-8 text-center border-border">
                   <p className="text-sm font-semibold text-muted-foreground italic mb-4">No active lease agreement registered.</p>
-                  <Button variant="outline" onClick={() => navigate({ to: '/leasing/leases' })}>
+                  <Button variant="outline" onClick={() => navigate({ to: '/manager/leasing/leases' })}>
                     Initiate Lease Wizard
                   </Button>
                 </Card>

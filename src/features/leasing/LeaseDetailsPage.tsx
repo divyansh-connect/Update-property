@@ -81,7 +81,7 @@ export const LeaseDetailsPage: React.FC = () => {
   return (
     <div className="space-y-6 text-foreground">
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/leasing/leases' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/manager/leasing/leases' })}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <span className="text-sm font-semibold text-muted-foreground">Back to Leases</span>

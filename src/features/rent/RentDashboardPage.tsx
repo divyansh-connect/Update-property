@@ -85,13 +85,13 @@ export const RentDashboardPage: React.FC = () => {
 
       {/* QUICK ACTION BAR */}
       <div className="flex flex-wrap gap-2.5 p-3.5 bg-card/60 border rounded-2xl">
-        <Button size="sm" onClick={() => navigate({ to: '/payments/new' })} className="flex items-center gap-1">
+        <Button size="sm" onClick={() => navigate({ to: '/manager/payments/new' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Record Payment
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/invoices/new' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/invoices/new' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Create Invoice
         </Button>
-        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/rent-ledger' })} className="flex items-center gap-1">
+        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/manager/rent-ledger' })} className="flex items-center gap-1">
           <Plus className="w-4 h-4" /> Rent Ledger
         </Button>
       </div>

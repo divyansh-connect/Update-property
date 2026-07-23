@@ -165,7 +165,7 @@ export const PaymentsPage: React.FC = () => {
         ]}
         action={{
           label: 'Record Payment',
-          onClick: () => navigate({ to: '/payments/new' }),
+          onClick: () => navigate({ to: '/manager/payments/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />

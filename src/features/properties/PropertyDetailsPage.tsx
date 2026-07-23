@@ -19,7 +19,7 @@ import {
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 export const PropertyDetailsPage: React.FC = () => {
-  const { id } = useParams({ from: '/properties/$id' });
+  const { id } = useParams({ from: '/manager/properties/$id' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isDocUploadOpen, setIsDocUploadOpen] = useState(false);
@@ -136,7 +136,7 @@ export const PropertyDetailsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/properties' })}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/manager/properties' })}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <span className="text-sm font-semibold text-muted-foreground">Back to Properties</span>
@@ -156,10 +156,10 @@ export const PropertyDetailsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/properties' })}>
+          <Button variant="outline" size="sm" onClick={() => navigate({ to: '/manager/properties' })}>
             Edit Property
           </Button>
-          <Button size="sm" onClick={() => navigate({ to: '/properties/units/new' })} className="flex items-center gap-1">
+          <Button size="sm" onClick={() => navigate({ to: '/manager/properties/units/new' })} className="flex items-center gap-1">
             <Plus className="w-4 h-4" />
             Add Unit
           </Button>

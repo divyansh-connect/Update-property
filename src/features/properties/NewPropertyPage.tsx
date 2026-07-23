@@ -78,7 +78,7 @@ export const NewPropertyPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/properties' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/properties' }), 2000);
     },
   });
 
@@ -261,7 +261,7 @@ export const NewPropertyPage: React.FC = () => {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate({ to: '/properties' })}
+            onClick={() => navigate({ to: '/manager/properties' })}
             className="flex items-center gap-1 font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -269,7 +269,7 @@ export const NewPropertyPage: React.FC = () => {
           </Button>
 
           <div className="flex space-x-2">
-            <Button type="button" variant="outline" onClick={() => navigate({ to: '/properties' })}>
+            <Button type="button" variant="outline" onClick={() => navigate({ to: '/manager/properties' })}>
               Save Draft
             </Button>
             <Button type="submit" disabled={createMutation.isPending}>

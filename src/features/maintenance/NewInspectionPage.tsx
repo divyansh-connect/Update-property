@@ -45,7 +45,7 @@ export const NewInspectionPage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inspections-list'] });
-      navigate({ to: '/inspections' });
+      navigate({ to: '/manager/inspections' });
     },
   });
 

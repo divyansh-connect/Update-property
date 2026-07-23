@@ -81,7 +81,7 @@ export const NewInvoicePage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices-list'] });
       setSuccess(true);
-      setTimeout(() => navigate({ to: '/invoices' }), 2000);
+      setTimeout(() => navigate({ to: '/manager/invoices' }), 2000);
     },
   });
 
@@ -183,7 +183,7 @@ export const NewInvoicePage: React.FC = () => {
 
         {/* FOOTER */}
         <div className="flex justify-between items-center pt-6 border-t">
-          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/invoices' })} className="flex items-center gap-1">
+          <Button type="button" variant="ghost" onClick={() => navigate({ to: '/manager/invoices' })} className="flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Cancel
           </Button>
           <Button type="submit" disabled={createMutation.isPending}>

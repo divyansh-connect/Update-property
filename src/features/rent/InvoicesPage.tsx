@@ -115,7 +115,7 @@ export const InvoicesPage: React.FC = () => {
         ]}
         action={{
           label: 'Create Invoice',
-          onClick: () => navigate({ to: '/invoices/new' }),
+          onClick: () => navigate({ to: '/manager/invoices/new' }),
           icon: <Plus className="w-4.5 h-4.5" />,
         }}
       />
@@ -192,7 +192,7 @@ export const InvoicesPage: React.FC = () => {
               <Button variant="outline" onClick={() => setSelectedInvoice(null)}>Close</Button>
               <Button onClick={() => {
                 setSelectedInvoice(null);
-                navigate({ to: '/payments/new' });
+                navigate({ to: '/manager/payments/new' });
               }}>Record Payment</Button>
             </div>
           </div>
