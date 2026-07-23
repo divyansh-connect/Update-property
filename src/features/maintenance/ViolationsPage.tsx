@@ -148,12 +148,14 @@ export const ViolationsPage: React.FC = () => {
       id: 'code',
       cell: ({ row }) => (
         <div className="space-y-1">
-          <span className="inline-flex items-center font-mono font-bold text-xs bg-secondary text-foreground border border-border px-2.5 py-1 rounded-lg whitespace-nowrap shadow-xs">
-            {row.original.violationCode}
+          <span className="inline-flex items-center gap-1.5 font-mono font-extrabold text-xs bg-gradient-to-r from-primary/10 to-indigo-500/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg whitespace-nowrap shadow-xs hover:bg-primary/20 transition-all cursor-pointer">
+            <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span>{row.original.violationCode}</span>
           </span>
           <p className="text-[10px] text-muted-foreground font-semibold">{row.original.issuingAgency}</p>
         </div>
       ),
+
 
     },
     {
