@@ -8,7 +8,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { OwnerMessageThread } from '../../components/OwnerComponents';
-import { MessageSquare, Plus, Loader2 } from 'lucide-react';
+import { MessageSquare, Plus, Loader2, Phone, Mail, MessageCircle } from 'lucide-react';
 import { FormDialog } from '../../components/FormDialog';
 
 export const TenantMessagesPage: React.FC = () => {
@@ -91,25 +91,57 @@ export const TenantMessagesPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Contacts Sidebar */}
-        <Card className="md:col-span-1 p-4 border bg-card space-y-3">
-          <h3 className="font-extrabold text-sm uppercase tracking-wider text-muted-foreground border-b pb-2">Contacts</h3>
-          <div className="space-y-2 text-xs font-semibold">
-            {contactsList.map((contact) => (
-              <button
-                key={contact}
-                onClick={() => setActiveSender(contact)}
-                className={`w-full text-left p-3.5 rounded-xl border transition flex items-center justify-between ${
-                  activeSender === contact ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary/15 hover:bg-secondary/35 border-border/40'
-                }`}
+        <div className="md:col-span-1 space-y-4">
+          <Card className="p-4 border bg-card space-y-3">
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-muted-foreground border-b pb-2">Contacts</h3>
+            <div className="space-y-2 text-xs font-semibold">
+              {contactsList.map((contact) => (
+                <button
+                  key={contact}
+                  onClick={() => setActiveSender(contact)}
+                  className={`w-full text-left p-3.5 rounded-xl border transition flex items-center justify-between ${
+                    activeSender === contact ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary/15 hover:bg-secondary/35 border-border/40'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2 truncate">
+                    <MessageSquare className="w-4.5 h-4.5 shrink-0" />
+                    <span className="truncate">{contact}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </Card>
+
+          {/* Direct Support Channels */}
+          <Card className="p-4 border bg-card space-y-3">
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-muted-foreground border-b pb-2">Direct Contact Channels</h3>
+            <div className="space-y-3 text-xs font-semibold">
+              <a
+                href="tel:+15550199"
+                className="flex items-center gap-2.5 p-3 rounded-xl border border-border bg-secondary/10 hover:bg-secondary/30 transition-all text-foreground"
               >
-                <div className="flex items-center space-x-2 truncate">
-                  <MessageSquare className="w-4.5 h-4.5 shrink-0" />
-                  <span className="truncate">{contact}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </Card>
+                <Phone className="w-4 h-4 text-primary shrink-0" />
+                <span>Call Property Office</span>
+              </a>
+              <a
+                href="mailto:support@doorloop.com"
+                className="flex items-center gap-2.5 p-3 rounded-xl border border-border bg-secondary/10 hover:bg-secondary/30 transition-all text-foreground"
+              >
+                <Mail className="w-4 h-4 text-primary shrink-0" />
+                <span>Email Management</span>
+              </a>
+              <a
+                href={`https://wa.me/15550199?text=${encodeURIComponent('Hello, I am a tenant in need of assistance.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all text-emerald-700 font-bold"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>WhatsApp Live Chat</span>
+              </a>
+            </div>
+          </Card>
+        </div>
 
         {/* Message Thread view */}
         <div className="md:col-span-2">
