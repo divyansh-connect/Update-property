@@ -1104,11 +1104,23 @@ for (let ca = 1; ca <= 510; ca++) {
 // 49. Communication Conversations (Minimum 3500)
 const convChannels = ['Email', 'SMS', 'Chat'] as const;
 const convStatuses = ['Open', 'Closed', 'Snoozed'] as const;
+const convMessagesList = [
+  "Hi, I noticed a leak in my bathroom ceiling today.",
+  "Can you confirm if my rent payment went through?",
+  "I have uploaded my signed lease agreement to the portal.",
+  "Is the gym open on weekends?",
+  "Could you please check my parking slot assignment?",
+  "Thank you for resolving the plumbing issue so quickly!",
+  "When will the next safety inspection take place?",
+  "Hi, I wanted to ask about the package delivery guidelines.",
+];
+
 for (let conv = 1; conv <= 3510; conv++) {
+  const tenant = tenants[conv % tenants.length];
   commConversationsList.push({
     id: `conv-${conv}`,
-    contactName: `ContactName ${(conv % 100) + 1}`,
-    lastMessage: `This is the last message snippet for thread #${conv}.`,
+    contactName: tenant ? `${tenant.firstName} ${tenant.lastName}` : `Tenant ${conv}`,
+    lastMessage: convMessagesList[conv % convMessagesList.length],
     channel: convChannels[conv % convChannels.length],
     assignedUser: `Property Manager Staff`,
     status: convStatuses[conv % convStatuses.length],

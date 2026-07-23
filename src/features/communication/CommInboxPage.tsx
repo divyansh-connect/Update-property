@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useRouterState } from '@tanstack/react-router';
 import api from '../../api';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { ChannelBadge } from '../../components/CommunicationComponents';
@@ -9,9 +10,17 @@ import { User, MessageSquare, Clock, Search, Building2, Mail, Phone } from 'luci
 import { clsx } from 'clsx';
 
 export const CommInboxPage: React.FC = () => {
-  const queryClient = useQueryClient();
-  const [selectedConvId, setSelectedConvId] = useState<string>('');
+  const routerState = useRouterState();
+  const searchParams = new URLSearchParams((routerState.location.search as string) || '');
+  const convIdFromUrl = searchParams.get('convId') || '';
+
+  const [selectedConvId, setSelectedConvId] = useState<string>(convIdFromUrl);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // If URL changes with a new convId, update selection
+  useEffect(() => {
+    if (convIdFromUrl) setSelectedConvId(convIdFromUrl);
+  }, [convIdFromUrl]);
 
   const { data: conversations = [], isLoading: loadConv } = useQuery({
     queryKey: ['comm-conversations-list'],

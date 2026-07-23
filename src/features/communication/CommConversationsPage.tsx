@@ -114,7 +114,7 @@ export const CommConversationsPage: React.FC = () => {
             variant="outline"
             size="sm"
             className="h-8 text-xs font-extrabold gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:border-primary transition-all"
-            onClick={() => navigate({ to: '/manager/communication/inbox' as any })}
+            onClick={() => navigate({ to: '/manager/communication/inbox' as any, search: { convId: row.original.id } as any })}
           >
             <Eye className="w-3.5 h-3.5" />
             View Thread
