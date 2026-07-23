@@ -114,3 +114,71 @@ export const InspectionChecklist: React.FC<InspectionChecklistProps> = ({
     </div>
   );
 };
+
+// --- ADVANCE PAYMENT BADGE ---
+export const AdvancePaymentBadge: React.FC<{ advancePaid: number; remainingOwed: number }> = ({ advancePaid, remainingOwed }) => {
+  return (
+    <div className="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-1 rounded-lg border bg-secondary/30 border-border">
+      <span className="text-emerald-500 font-black">Adv: ${advancePaid.toLocaleString()}</span>
+      <span className="text-muted-foreground">•</span>
+      <span className={remainingOwed > 0 ? 'text-amber-500 font-extrabold' : 'text-emerald-500 font-bold'}>
+        Owed: ${remainingOwed.toLocaleString()}
+      </span>
+    </div>
+  );
+};
+
+// --- ADVANCE PAYMENT SUMMARY CARD ---
+export const AdvancePaymentSummaryCard: React.FC<{
+  vendorOrStaffName: string;
+  totalCost: number;
+  advancePaid: number;
+  remainingOwed: number;
+  paymentMethod: string;
+  date: string;
+  onRecordNew?: () => void;
+}> = ({
+  vendorOrStaffName,
+  totalCost,
+  advancePaid,
+  remainingOwed,
+  paymentMethod,
+  date,
+  onRecordNew,
+}) => {
+  return (
+    <Card className="p-4 border bg-card text-foreground space-y-3">
+      <div className="flex items-center justify-between border-b pb-2.5">
+        <div className="space-y-0.5">
+          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">Maintenance Personnel Advance Log</span>
+          <h4 className="font-extrabold text-xs text-foreground">{vendorOrStaffName}</h4>
+        </div>
+        {onRecordNew && (
+          <Button size="sm" onClick={onRecordNew} className="h-7 text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white">
+            + Record Advance
+          </Button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="p-2 bg-secondary/30 rounded-xl border border-border/50">
+          <span className="text-[9px] uppercase font-bold text-muted-foreground block">Total Cost</span>
+          <span className="font-black text-foreground">${totalCost.toLocaleString()}</span>
+        </div>
+        <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+          <span className="text-[9px] uppercase font-bold text-emerald-500 block">Advance Paid</span>
+          <span className="font-black text-emerald-600">${advancePaid.toLocaleString()}</span>
+        </div>
+        <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+          <span className="text-[9px] uppercase font-bold text-amber-500 block">Balance Owed</span>
+          <span className="font-black text-amber-600">${remainingOwed.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-1">
+        <span>Method: <strong className="text-foreground font-bold">{paymentMethod}</strong></span>
+        <span>Paid On: <strong className="text-foreground font-bold">{date}</strong></span>
+      </div>
+    </Card>
+  );
+};

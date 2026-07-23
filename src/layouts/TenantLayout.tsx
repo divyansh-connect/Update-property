@@ -165,7 +165,77 @@ export const TenantLayout: React.FC<TenantLayoutProps> = ({
                   </span>
                 )}
               </Button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-card border rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150 text-foreground">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-foreground">
+                      Tenant Notifications ({notifications.length})
+                    </h4>
+                    <div className="flex space-x-2 text-xs font-semibold text-primary">
+                      <button onClick={markAllAsRead} className="hover:underline">
+                        Read All
+                      </button>
+                      <span>•</span>
+                      <button onClick={clearAll} className="hover:underline text-rose-500">
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {notifications.length === 0 ? (
+                      <p className="text-center text-xs text-muted-foreground py-6">
+                        No notifications found
+                      </p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => {
+                            markAsRead(n.id);
+                            setShowNotifications(false);
+                            let target = (n as any).targetPath || (n as any).link;
+                            if (!target) {
+                              const titleLower = (n.title || '').toLowerCase();
+                              const msgLower = (n.message || '').toLowerCase();
+                              if (titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
+                                target = '/tenant/payments';
+                              } else if (titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak') || msgLower.includes('repair')) {
+                                target = '/tenant/maintenance';
+                              } else if (titleLower.includes('lease')) {
+                                target = '/tenant/lease';
+                              } else if (titleLower.includes('document')) {
+                                target = '/tenant/documents';
+                              } else {
+                                target = '/tenant/messages';
+                              }
+                            }
+                            if (navigate) navigate(target);
+                          }}
+                          className={clsx(
+                            'p-2.5 rounded-xl border border-border/50 hover:bg-primary/10 cursor-pointer transition-all group',
+                            !n.read && 'bg-primary/5 border-primary/20 font-bold'
+                          )}
+                        >
+                          <div className="flex items-start justify-between">
+                            <span className="font-bold text-xs group-hover:text-primary transition-colors">{n.title}</span>
+                            <span className="text-[10px] text-muted-foreground">{n.time}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed font-medium">
+                            {n.message}
+                          </p>
+                          <span className="text-[9px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity block mt-1">
+                            Click to view page →
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
+
 
             {/* Language Selector */}
             <LanguageSelector />

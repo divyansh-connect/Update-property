@@ -203,6 +203,8 @@ import { CommNotificationsPage } from '../features/communication/CommNotificatio
 import { CommScheduledPage } from '../features/communication/CommScheduledPage';
 import { CommActivityPage } from '../features/communication/CommActivityPage';
 import { CommSettingsPage } from '../features/communication/CommSettingsPage';
+import { CommMessagesPage } from '../features/communication/CommMessagesPage';
+import { ViolationsPage } from '../features/maintenance/ViolationsPage';
 
 // --- ROOT ROUTE ---
 const rootRoute = createRootRoute({
@@ -1176,6 +1178,16 @@ const maintenanceReportsRoute = createRoute({
   ),
 });
 
+const violationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/manager/maintenance/violations',
+  component: () => (
+    <ProtectedWrapper>
+      <ViolationsPage />
+    </ProtectedWrapper>
+  ),
+});
+
 const documentsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/manager/documents',
@@ -1710,6 +1722,16 @@ const commNotificationsRoute = createRoute({
   ),
 });
 
+const commMessagesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/manager/communication/messages',
+  component: () => (
+    <ProtectedWrapper>
+      <CommMessagesPage />
+    </ProtectedWrapper>
+  ),
+});
+
 const commScheduledRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/manager/communication/scheduled',
@@ -1996,7 +2018,7 @@ const NewCompanyPage: React.FC = () => {
     const plan = (target.elements.namedItem('plan') as HTMLSelectElement).value;
 
     const stored = localStorage.getItem('companies');
-    let companiesList = [];
+    let companiesList: any[] = [];
     if (stored) {
       companiesList = JSON.parse(stored);
     } else {
@@ -2028,7 +2050,7 @@ const NewCompanyPage: React.FC = () => {
 
     // Also register the primary contact person as the first administrator user for this company
     const storedUsers = localStorage.getItem('company_users');
-    let usersList = [];
+    let usersList: any[] = [];
     if (storedUsers) {
       usersList = JSON.parse(storedUsers);
     } else {
@@ -4794,6 +4816,8 @@ const routeTree = rootRoute.addChildren([
   newInspectionRoute,
   maintenanceCalendarRoute,
   maintenanceReportsRoute,
+  violationsRoute,
+
   documentsRoute,
   docsAllRoute,
   docsFoldersRoute,
@@ -4833,6 +4857,8 @@ const routeTree = rootRoute.addChildren([
   commTemplatesRoute,
   commContactsRoute,
   commNotificationsRoute,
+  commMessagesRoute,
+
   commScheduledRoute,
   commActivityRoute,
   commSettingsRoute,
