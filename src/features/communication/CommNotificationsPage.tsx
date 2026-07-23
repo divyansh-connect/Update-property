@@ -7,7 +7,7 @@ import { FilterBar } from '../../components/FilterBar';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/StatusBadge';
 import { CommunicationLayout } from './components/CommunicationLayout';
-import { CheckCheck, ExternalLink, ArrowRight, Bell, BellOff, CreditCard, Wrench, Users, FileText, ShieldAlert, MessageSquare } from 'lucide-react';
+import { CheckCheck, ArrowRight, Bell, BellOff, CreditCard, Wrench, Users, FileText, ShieldAlert, MessageSquare } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { clsx } from 'clsx';
 
@@ -156,30 +156,19 @@ export const CommNotificationsPage: React.FC = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
       cell: ({ row }) => (
-        <div className="flex items-center gap-1">
+        row.original.status === 'Unread' ? (
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleNotificationClick(row.original)}
-            className="h-7 text-xs gap-1 font-bold text-primary border-primary/30 hover:bg-primary/10"
+            variant="ghost"
+            size="icon"
+            onClick={() => markMutation.mutate(row.original.id)}
+            title="Mark as read"
+            className="h-7 w-7"
           >
-            <ExternalLink className="w-3 h-3" />
-            Open
+            <CheckCheck className="w-4 h-4 text-emerald-500" />
           </Button>
-          {row.original.status === 'Unread' && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => markMutation.mutate(row.original.id)}
-              title="Mark as read"
-              className="h-7 w-7"
-            >
-              <CheckCheck className="w-4 h-4 text-emerald-500" />
-            </Button>
-          )}
-        </div>
+        ) : null
       ),
     },
   ];

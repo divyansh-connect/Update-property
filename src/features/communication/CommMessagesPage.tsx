@@ -1,44 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../api';
 import { Card } from '../../components/ui/Card';
 import { CommunicationPanel } from '../../components/CommunicationPanel';
 import { CommunicationLayout } from './components/CommunicationLayout';
-import { Phone, Mail, MessageCircle, Wrench } from 'lucide-react';
-import { StatusBadge } from '../../components/StatusBadge';
+import { Phone, Mail, MessageCircle, Search, Check, User } from 'lucide-react';
+import { clsx } from 'clsx';
 
 export const CommMessagesPage: React.FC = () => {
-  const [selectedTicketId, setSelectedTicketId] = useState<string>('maint-1');
+  const [selectedTenantId, setSelectedTenantId] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const comboboxRef = useRef<HTMLDivElement>(null);
 
-  const { data: requests = [] } = useQuery({
-    queryKey: ['maintenance-requests-comm'],
-    queryFn: async () => {
-      try {
-        if (api.serviceRequests) return await api.serviceRequests.getAll();
-        return [];
-      } catch (e) {
-        return [];
-      }
-    },
+  // Fetch tenants for search
+  const { data: tenants = [] } = useQuery({
+    queryKey: ['tenants-list'],
+    queryFn: () => api.tenant.getAll(),
   });
 
-  const activeRequest: any = requests.find((r: any) => r.id === selectedTicketId) || requests[0] || {
-    id: 'maint-1',
-    title: 'Water Leak in Bathroom Ceiling',
-    tenantName: 'Sarah Jenkins',
-    tenantPhone: '+1 (555) 234-5678',
-    tenantEmail: 'sarah.j@rentals.com',
-    propertyName: 'Sunset Heights Loft #402',
-    property: 'Sunset Heights Loft #402',
-    priority: 'High',
-    status: 'In Progress',
-    createdAt: '2026-07-22',
-  };
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const tenantPhone = activeRequest.tenantPhone || '+1 (555) 234-5678';
-  const tenantEmail = activeRequest.tenantEmail || 'tenant@rentals.com';
+  const filteredTenants = tenants.filter((t: any) => {
+    const term = searchQuery.toLowerCase();
+    return (
+      `${t.firstName} ${t.lastName}`.toLowerCase().includes(term) ||
+      (t.unitNumber || '').toLowerCase().includes(term) ||
+      (t.email || '').toLowerCase().includes(term) ||
+      (t.phone || '').toLowerCase().includes(term)
+    );
+  });
+
+  const selectedTenant: any = tenants.find((t: any) => t.id === selectedTenantId);
+
+  const tenantPhone = selectedTenant?.phone || selectedTenant?.tenantPhone || '';
+  const tenantEmail = selectedTenant?.email || selectedTenant?.tenantEmail || '';
+  const tenantName = selectedTenant ? `${selectedTenant.firstName} ${selectedTenant.lastName}` : '';
   const cleanPhone = tenantPhone.replace(/[^0-9]/g, '');
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${activeRequest.tenantName}, updating you regarding maintenance ticket #${activeRequest.id}: "${activeRequest.title}"`)}`;
+  const whatsappUrl = tenantPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${tenantName}, this is a message from your property manager.`)}`
+    : '#';
 
   return (
     <CommunicationLayout
@@ -50,101 +59,183 @@ export const CommMessagesPage: React.FC = () => {
         { label: 'Maintenance Messages' },
       ]}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN: Maintenance Tickets Selector */}
-        <Card className="lg:col-span-1 p-4 border bg-card flex flex-col gap-3">
-          <div className="flex items-center justify-between border-b pb-3">
-            <h3 className="font-extrabold text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <Wrench className="w-4 h-4 text-amber-500" />
-              Active Maintenance Tickets
-            </h3>
-            <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              {requests.length || 5} Tickets
-            </span>
+      <div className="space-y-6">
+
+        {/* STEP 1 — Search and Select Tenant */}
+        <Card className="p-5 border bg-card space-y-4">
+          <div>
+            <h2 className="font-extrabold text-sm uppercase tracking-wider text-foreground flex items-center gap-2 mb-1">
+              <User className="w-4 h-4 text-primary" />
+              Step 1 — Select Tenant to Message
+            </h2>
+            <p className="text-xs text-muted-foreground">Search by tenant name, unit number, email, or phone.</p>
           </div>
 
-          <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
-            {(requests.length > 0 ? requests : [
-              { id: 'maint-1', title: 'Water Leak in Bathroom Ceiling', tenantName: 'Sarah Jenkins', propertyName: 'Sunset Heights #402', priority: 'Urgent', status: 'In Progress' },
-              { id: 'maint-2', title: 'HVAC Air Conditioning Not Cooling', tenantName: 'Michael Chang', propertyName: 'Oakwood Apartments #105', priority: 'High', status: 'Open' },
-              { id: 'maint-3', title: 'Broken Garbage Disposal Unit', tenantName: 'Emily Davis', propertyName: 'Grand Avenue Towers #812', priority: 'Medium', status: 'Pending' },
-            ]).map((req: any) => (
-              <button
-                key={req.id}
-                onClick={() => setSelectedTicketId(req.id)}
-                className={`w-full text-left p-3.5 rounded-xl border transition-all flex flex-col gap-2 ${
-                  selectedTicketId === req.id
-                    ? 'bg-primary/10 border-primary shadow-sm'
-                    : 'bg-secondary/20 hover:bg-secondary/40 border-border/50'
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <span className="font-bold text-xs line-clamp-1">{req.title}</span>
-                  <StatusBadge status={req.status || 'Open'} />
+          <div ref={comboboxRef} className="relative max-w-xl">
+            <div
+              className={clsx(
+                'flex items-center border rounded-xl px-4 py-3 bg-background cursor-pointer transition-all',
+                isDropdownOpen ? 'border-primary ring-1 ring-primary/30' : 'border-border hover:border-primary/50'
+              )}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <Search className="w-4 h-4 text-muted-foreground mr-3 shrink-0" />
+              <span className={clsx('flex-1 text-sm font-semibold truncate', !selectedTenant && 'text-muted-foreground')}>
+                {selectedTenant
+                  ? `${tenantName} — Unit ${selectedTenant.unitNumber || 'N/A'}`
+                  : 'Search tenant by name, unit, email or phone...'}
+              </span>
+              {selectedTenant && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSelectedTenantId(''); setSearchQuery(''); }}
+                  className="ml-2 text-muted-foreground hover:text-foreground text-lg leading-none"
+                >×</button>
+              )}
+            </div>
+
+            {isDropdownOpen && (
+              <div className="absolute z-50 top-[calc(100%+6px)] left-0 w-full bg-card border border-border rounded-xl shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-border bg-muted/10">
+                  <input
+                    autoFocus
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Type to filter..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">{req.tenantName || 'Tenant'}</span>
-                  <span>{req.propertyName || req.property || 'Property Unit'}</span>
+                <div className="max-h-[280px] overflow-y-auto p-1">
+                  {filteredTenants.length === 0 ? (
+                    <div className="p-4 text-center text-sm font-semibold text-muted-foreground">
+                      No tenant found. Try a different name or unit.
+                    </div>
+                  ) : (
+                    filteredTenants.map((t: any) => (
+                      <div
+                        key={t.id}
+                        onClick={() => {
+                          setSelectedTenantId(t.id);
+                          setIsDropdownOpen(false);
+                          setSearchQuery('');
+                        }}
+                        className={clsx(
+                          'flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted/40 transition-colors',
+                          selectedTenantId === t.id && 'bg-primary/5'
+                        )}
+                      >
+                        <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs mr-3 shrink-0">
+                          {t.firstName?.[0]}{t.lastName?.[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold truncate">{t.firstName} {t.lastName}</div>
+                          <div className="text-[10px] font-semibold text-muted-foreground">
+                            Unit {t.unitNumber || 'N/A'} • {t.propertyName || 'Property'} • {t.email || ''}
+                          </div>
+                        </div>
+                        {selectedTenantId === t.id && <Check className="w-4 h-4 text-primary shrink-0" />}
+                      </div>
+                    ))
+                  )}
                 </div>
-              </button>
-            ))}
+              </div>
+            )}
           </div>
         </Card>
 
-        {/* RIGHT COLUMN: Interactive Communication & WhatsApp Launcher Panel */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Active Ticket Banner */}
-          <Card className="p-4 border bg-gradient-to-r from-card via-card/90 to-primary/5 border-primary/20 flex flex-wrap items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="font-black text-xs uppercase bg-primary text-white px-2 py-0.5 rounded">
-                  #{activeRequest.id}
-                </span>
-                <h2 className="font-extrabold text-base text-foreground">{activeRequest.title}</h2>
+        {/* STEP 2 — Message Options (only shown when tenant is selected) */}
+        {selectedTenant ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Left: Tenant Info Card */}
+            <Card className="lg:col-span-1 p-5 border bg-card space-y-4">
+              <div className="flex items-center gap-3 border-b pb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg shrink-0">
+                  {selectedTenant.firstName?.[0]}{selectedTenant.lastName?.[0]}
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-foreground">{tenantName}</h3>
+                  <p className="text-[11px] font-semibold text-muted-foreground">
+                    Unit {selectedTenant.unitNumber || 'N/A'} • {selectedTenant.propertyName || 'Property'}
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <span className="font-bold text-foreground">{activeRequest.tenantName || 'Tenant'}</span>
-                <span>•</span>
-                <span>{activeRequest.propertyName || activeRequest.property || 'Main Building Unit'}</span>
-              </p>
-            </div>
 
-            {/* Quick Action Launchers */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow hover:shadow-lg"
-              >
-                <MessageCircle className="w-4 h-4" />
-                WhatsApp Launcher
-              </a>
-              <a
-                href={`tel:${tenantPhone}`}
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all shadow"
-              >
-                <Phone className="w-4 h-4" />
-                Call ({tenantPhone})
-              </a>
-              <a
-                href={`mailto:${tenantEmail}`}
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3.5 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all"
-              >
-                <Mail className="w-4 h-4 text-primary" />
-                Email
-              </a>
-            </div>
-          </Card>
+              <div className="space-y-3 text-xs font-semibold">
+                {tenantPhone && (
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-muted-foreground uppercase">Phone</p>
+                    <p className="font-bold flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-primary" />{tenantPhone}
+                    </p>
+                  </div>
+                )}
+                {tenantEmail && (
+                  <div className="space-y-1 border-t pt-3">
+                    <p className="text-[10px] text-muted-foreground uppercase">Email</p>
+                    <p className="font-bold flex items-center gap-1.5 break-all">
+                      <Mail className="w-3.5 h-3.5 text-primary shrink-0" />{tenantEmail}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-          {/* Communication Panel */}
-          <CommunicationPanel
-            entityName={activeRequest.tenantName || 'Tenant'}
-            tenantPhone={tenantPhone}
-            tenantEmail={tenantEmail}
-            requestTitle={activeRequest.title}
-          />
-        </div>
+              {/* Quick Contact Buttons */}
+              <div className="space-y-2 border-t pt-4">
+                <p className="text-[10px] font-black uppercase text-muted-foreground">Quick Contact</p>
+                {tenantPhone && (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-xs font-extrabold px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Send WhatsApp Message
+                  </a>
+                )}
+                {tenantPhone && (
+                  <a
+                    href={`tel:${tenantPhone}`}
+                    className="flex items-center gap-2 w-full text-xs font-extrabold px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all shadow"
+                  >
+                    <Phone className="w-4 h-4" />
+                    Call Tenant
+                  </a>
+                )}
+                {tenantEmail && (
+                  <a
+                    href={`mailto:${tenantEmail}`}
+                    className="flex items-center gap-2 w-full text-xs font-extrabold px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all"
+                  >
+                    <Mail className="w-4 h-4 text-primary" />
+                    Send Email
+                  </a>
+                )}
+              </div>
+            </Card>
+
+            {/* Right: In-App Communication Panel */}
+            <div className="lg:col-span-2">
+              <CommunicationPanel
+                entityName={tenantName}
+                tenantPhone={tenantPhone}
+                tenantEmail={tenantEmail}
+                requestTitle={`Direct message to ${tenantName}`}
+              />
+            </div>
+          </div>
+        ) : (
+          /* Empty state when no tenant selected */
+          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-border rounded-2xl bg-muted/5">
+            <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
+              <MessageCircle className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-base font-bold text-foreground mb-1">Select a Tenant to Start</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Use the search above to find a tenant, then send them a message via WhatsApp, Phone, Email, or in-app chat.
+            </p>
+          </div>
+        )}
       </div>
     </CommunicationLayout>
   );
