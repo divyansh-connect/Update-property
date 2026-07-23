@@ -263,7 +263,7 @@ const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
 
   React.useEffect(() => {
     if (!isAuthenticated) {
-      navigate({ to: '/landing' });
+      navigate({ to: '/login' });
       return;
     }
     // Redirect Owner/Tenant/Staff from Root to their dashboards
@@ -4631,7 +4631,8 @@ const delinquencyReportRoute = createRoute({
   path: '/manager/reports/delinquency',
   component: () => (<ProtectedWrapper><DelinquencyReportPage /></ProtectedWrapper>),
 });
-const superAdminIndexRoute = createRoute({
+
+const superAdminIndexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/super-admin',
   component: () => (
