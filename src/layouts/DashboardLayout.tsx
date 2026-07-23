@@ -166,6 +166,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       title: 'Communication',
       icon: <MessageSquare className="w-5 h-5" />,
       path: '/manager/communication',
+      submenu: [
+        { title: 'Notifications', path: '/manager/communication/notifications' },
+        { title: 'Maintenance Messages', path: '/manager/communication/messages' },
+        { title: 'Conversations Log', path: '/manager/communication/conversations' },
+        { title: 'Unified Inbox', path: '/manager/communication/inbox' },
+      ],
     },
     {
       title: 'AI Assistant',
