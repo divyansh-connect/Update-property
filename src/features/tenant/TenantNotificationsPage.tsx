@@ -84,7 +84,8 @@ export const TenantNotificationsPage: React.FC = () => {
                 <p className="text-[10px] text-muted-foreground/60">{n.time}</p>
               </div>
               <div className="flex items-center space-x-2">
-                <StatusBadge status={n.type} />
+                <StatusBadge status={n.type || 'info'} />
+
                 <Button 
                   variant="outline" 
                   size="sm" 

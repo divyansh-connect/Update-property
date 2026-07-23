@@ -12,6 +12,8 @@ import { Button } from '../components/ui/Button';
 import { StatusBadge } from '../components/StatusBadge';
 import { clsx } from 'clsx';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { NotificationDrawer } from '../components/NotificationDrawer';
+
 
 interface MenuItem {
   title: string;
@@ -522,12 +524,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </Button>
 
-            {/* Notifications Dropdown */}
+            {/* Notifications Launcher */}
             <div className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setShowNotifications(!showNotifications)}
+                onClick={() => setShowNotifications(true)}
                 className="relative"
               >
                 <Bell className="w-5 h-5" />
@@ -537,73 +539,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </span>
                 )}
               </Button>
-
-              {showNotifications && (
-                <div className="absolute right-0 top-12 z-50 w-80 rounded-xl border border-border bg-card shadow-2xl p-4 animate-fade-in text-foreground">
-                  <div className="flex items-center justify-between pb-2 border-b border-border/80">
-                    <h4 className="font-bold text-sm">Notifications</h4>
-                    <div className="flex space-x-2 text-xs font-semibold text-primary">
-                      <button onClick={markAllAsRead} className="hover:underline">
-                        Read All
-                      </button>
-                      <span>•</span>
-                      <button onClick={clearAll} className="hover:underline text-muted-foreground">
-                        Clear
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-                    {notifications.length === 0 ? (
-                      <p className="text-center text-xs text-muted-foreground py-6">
-                        No notifications
-                      </p>
-                    ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          onClick={() => {
-                            markAsRead(n.id);
-                            setShowNotifications(false);
-                            let target = (n as any).targetPath || (n as any).link;
-                            if (!target) {
-                              const titleLower = (n.title || '').toLowerCase();
-                              const msgLower = (n.message || '').toLowerCase();
-                              if (titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
-                                target = '/payments';
-                              } else if (titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak')) {
-                                target = '/maintenance/requests';
-                              } else if (titleLower.includes('lease')) {
-                                target = '/leasing/leases';
-                              } else {
-                                target = '/communication/notifications';
-                              }
-                            }
-                            if (navigate) navigate(target);
-                          }}
-                          className={clsx(
-                            'p-2.5 rounded-lg border border-border/40 hover:bg-primary/10 cursor-pointer transition-all group',
-                            !n.read && 'bg-primary/5 border-primary/20'
-                          )}
-                        >
-                          <div className="flex items-start justify-between">
-                            <span className="font-semibold text-xs group-hover:text-primary transition-colors">{n.title}</span>
-                            <span className="text-[10px] text-muted-foreground">{n.time}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                            {n.message}
-                          </p>
-                          <span className="text-[9px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity block mt-1">
-                            Click to open detail page →
-                          </span>
-                        </div>
-                      ))
-                    )}
-
-                  </div>
-                </div>
-              )}
             </div>
+
 
             {/* Language Selector */}
             <LanguageSelector />
@@ -668,7 +605,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {children}
         </main>
       </div>
+
+      {/* NOTIFICATION DRAWER / PANEL */}
+      <NotificationDrawer
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        navigate={navigate}
+        viewAllPath="/communication/notifications"
+      />
     </div>
   );
 };
+
 export default DashboardLayout;
