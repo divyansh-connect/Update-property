@@ -147,13 +147,14 @@ export const ViolationsPage: React.FC = () => {
       header: 'Violation Code',
       id: 'code',
       cell: ({ row }) => (
-        <div className="space-y-0.5">
-          <span className="font-black text-xs text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+        <div className="space-y-1">
+          <span className="inline-flex items-center font-mono font-bold text-xs bg-secondary text-foreground border border-border px-2.5 py-1 rounded-lg whitespace-nowrap shadow-xs">
             {row.original.violationCode}
           </span>
           <p className="text-[10px] text-muted-foreground font-semibold">{row.original.issuingAgency}</p>
         </div>
       ),
+
     },
     {
       accessorKey: 'propertyAddress',
