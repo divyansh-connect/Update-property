@@ -57,12 +57,21 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     onClose();
 
     if (navigate) {
+      const isTenantContext = viewAllPath.startsWith('/tenant');
       let target = item.targetPath;
-      if (!target) {
-        if (item.type === 'maintenance') target = '/manager/maintenance/requests';
-        else if (item.type === 'payment') target = '/manager/rent-payments';
-        else if (item.type === 'lease') target = '/manager/tenants';
-        else target = viewAllPath;
+
+      if (isTenantContext) {
+        if (item.type === 'maintenance') target = '/tenant/maintenance';
+        else if (item.type === 'payment') target = '/tenant/payments';
+        else if (item.type === 'lease') target = '/tenant/lease';
+        else target = '/tenant/notifications';
+      } else {
+        if (!target || target.startsWith('/tenant')) {
+          if (item.type === 'maintenance') target = '/manager/maintenance/requests';
+          else if (item.type === 'payment') target = '/manager/rent-payments';
+          else if (item.type === 'lease') target = '/manager/tenants';
+          else target = viewAllPath;
+        }
       }
       navigate(target);
     }

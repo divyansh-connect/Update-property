@@ -12,22 +12,26 @@ export const TenantNotificationsPage: React.FC = () => {
 
   const handleTenantNotifClick = (n: any) => {
     markAsRead(n.id);
-    let target = n.targetPath || n.link;
-    if (!target) {
-      const titleLower = (n.title || '').toLowerCase();
-      const msgLower = (n.message || '').toLowerCase();
-      if (titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
-        target = '/tenant/payments';
-      } else if (titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak') || msgLower.includes('repair')) {
-        target = '/tenant/maintenance';
-      } else if (titleLower.includes('lease')) {
-        target = '/tenant/lease';
-      } else if (titleLower.includes('document')) {
-        target = '/tenant/documents';
-      } else {
-        target = '/tenant/messages';
-      }
+    let rawTarget = n.targetPath || n.link || '';
+
+    // If target is a manager route or missing, map intelligently to tenant portal routes
+    let target = '/tenant/notifications';
+    const typeLower = (n.type || '').toLowerCase();
+    const titleLower = (n.title || '').toLowerCase();
+    const msgLower = (n.message || '').toLowerCase();
+
+    if (rawTarget.includes('/maintenance') || typeLower.includes('maintenance') || titleLower.includes('maintenance') || msgLower.includes('ac') || msgLower.includes('leak') || msgLower.includes('repair')) {
+      target = '/tenant/maintenance';
+    } else if (rawTarget.includes('/payment') || rawTarget.includes('/rent') || typeLower.includes('payment') || titleLower.includes('payment') || titleLower.includes('rent') || msgLower.includes('paid')) {
+      target = '/tenant/payments';
+    } else if (rawTarget.includes('/lease') || rawTarget.includes('/tenant') || typeLower.includes('lease') || titleLower.includes('lease')) {
+      target = '/tenant/lease';
+    } else if (rawTarget.includes('/document') || typeLower.includes('document')) {
+      target = '/tenant/documents';
+    } else {
+      target = '/tenant/messages';
     }
+
     navigate({ to: target as any });
   };
 
