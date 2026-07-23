@@ -153,6 +153,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         { title: 'Dashboard', path: '/manager/maintenance' },
         { title: 'Service Requests', path: '/manager/maintenance/requests' },
         { title: 'Work Orders', path: '/manager/maintenance/work-orders' },
+        { title: 'City Violations', path: '/manager/maintenance/violations' },
         { title: 'Inspections', path: '/manager/inspections' },
         { title: 'Vendors', path: '/manager/vendors' },
       ],
