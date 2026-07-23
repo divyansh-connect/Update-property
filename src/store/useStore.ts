@@ -114,7 +114,9 @@ export interface NotificationItem {
   message: string;
   time: string;
   read: boolean;
-  type: 'info' | 'warning' | 'success';
+  type?: 'payment' | 'maintenance' | 'lease' | 'system' | 'info' | 'warning' | 'success';
+  targetPath?: string;
+  entityId?: string;
 }
 
 interface NotificationState {
@@ -127,9 +129,10 @@ interface NotificationState {
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [
-    { id: 'notif-1', title: 'New Maintenance Request', message: 'AC Not Cooling in Unit 301 (Sunset Villas)', time: '10m ago', read: false, type: 'warning' },
-    { id: 'notif-2', title: 'Payment Received', message: 'John Doe paid $1,850 rent for Unit 101', time: '1h ago', read: false, type: 'success' },
-    { id: 'notif-3', title: 'Lease Expiring Soon', message: 'Jane Smith (Unit 102) lease expires in 12 days', time: '1d ago', read: true, type: 'info' },
+    { id: 'notif-1', title: 'New Maintenance Request', message: 'AC Not Cooling in Unit 301 (Sunset Villas)', time: '5m ago', read: false, type: 'maintenance', targetPath: '/maintenance/service-requests' },
+    { id: 'notif-2', title: 'Rent Payment Received', message: 'John Doe paid $1,850 rent for Unit 101', time: '45m ago', read: false, type: 'payment', targetPath: '/rent' },
+    { id: 'notif-3', title: 'Lease Expiring Soon', message: 'Jane Smith (Unit 102) lease expires in 12 days', time: 'Yesterday', read: true, type: 'lease', targetPath: '/tenants' },
+    { id: 'notif-4', title: 'City Violation API Sync', message: 'Municipal DOB/HPD API sync completed successfully with 5 active tickets', time: '2d ago', read: true, type: 'system', targetPath: '/maintenance/violations' },
   ],
   addNotification: (n) => set((state) => ({
     notifications: [
@@ -142,6 +145,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       ...state.notifications
     ]
   })),
+
   markAsRead: (id) => set((state) => ({
     notifications: state.notifications.map((n) => n.id === id ? { ...n, read: true } : n)
   })),

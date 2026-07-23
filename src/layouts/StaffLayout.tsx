@@ -7,6 +7,8 @@ import {
 import { Button } from '../components/ui/Button';
 import { clsx } from 'clsx';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { NotificationDrawer } from '../components/NotificationDrawer';
+
 
 interface MenuItem {
   title: string;
@@ -158,9 +160,9 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
 
-            {/* NOTIFICATIONS WIDGET */}
+            {/* NOTIFICATIONS WIDGET LAUNCHER */}
             <div className="relative">
-              <Button variant="ghost" size="icon" onClick={() => setShowNotifications(!showNotifications)}>
+              <Button variant="ghost" size="icon" onClick={() => setShowNotifications(true)}>
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-bounce">
@@ -168,60 +170,8 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
                   </span>
                 )}
               </Button>
-
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-card border rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150 text-foreground">
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-foreground">
-                      Task Alerts ({notifications.length})
-                    </h4>
-                    <div className="flex space-x-2 text-xs font-semibold text-primary">
-                      <button onClick={markAllAsRead} className="hover:underline">
-                        Read All
-                      </button>
-                      <span>•</span>
-                      <button onClick={clearAll} className="hover:underline text-rose-500">
-                        Clear
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto pr-1">
-                    {notifications.length === 0 ? (
-                      <p className="text-center text-xs text-muted-foreground py-6">
-                        No notifications found
-                      </p>
-                    ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          onClick={() => {
-                            markAsRead(n.id);
-                            setShowNotifications(false);
-                            if (navigate) navigate('/staff/maintenance');
-                          }}
-                          className={clsx(
-                            'p-2.5 rounded-xl border border-border/50 hover:bg-primary/10 cursor-pointer transition-all group',
-                            !n.read && 'bg-primary/5 border-primary/20 font-bold'
-                          )}
-                        >
-                          <div className="flex items-start justify-between">
-                            <span className="font-bold text-xs group-hover:text-primary transition-colors">{n.title}</span>
-                            <span className="text-[10px] text-muted-foreground">{n.time}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed font-medium">
-                            {n.message}
-                          </p>
-                          <span className="text-[9px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity block mt-1">
-                            Click to view staff task →
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
+
 
             {/* Language Selector */}
             <LanguageSelector />
@@ -271,7 +221,16 @@ export const StaffLayout: React.FC<StaffLayoutProps> = ({
           {children}
         </main>
       </div>
+
+      {/* NOTIFICATION DRAWER / PANEL */}
+      <NotificationDrawer
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        navigate={navigate}
+        viewAllPath="/staff/maintenance"
+      />
     </div>
   );
 };
+
 export default StaffLayout;
