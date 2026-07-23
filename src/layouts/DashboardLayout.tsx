@@ -612,7 +612,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         isOpen={showNotifications}
         onClose={() => setShowNotifications(false)}
         navigate={navigate}
-        viewAllPath="/communication/notifications"
+        viewAllPath="/manager/communication/notifications"
       />
     </div>
   );

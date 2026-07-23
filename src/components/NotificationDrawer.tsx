@@ -28,7 +28,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   isOpen,
   onClose,
   navigate,
-  viewAllPath = '/communication/notifications',
+  viewAllPath = '/manager/communication/notifications',
 }) => {
   const { notifications, markAsRead, markAllAsRead, clearAll } = useNotificationStore();
 
@@ -59,9 +59,9 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     if (navigate) {
       let target = item.targetPath;
       if (!target) {
-        if (item.type === 'maintenance') target = '/maintenance/requests';
-        else if (item.type === 'payment') target = '/rent';
-        else if (item.type === 'lease') target = '/tenants';
+        if (item.type === 'maintenance') target = '/manager/maintenance/requests';
+        else if (item.type === 'payment') target = '/manager/rent-payments';
+        else if (item.type === 'lease') target = '/manager/tenants';
         else target = viewAllPath;
       }
       navigate(target);
