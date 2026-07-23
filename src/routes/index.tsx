@@ -2872,51 +2872,211 @@ const SubscriptionCouponsPage: React.FC = () => {
 
 // 5. PLATFORM USERS PAGE
 const PlatformUsersPage: React.FC = () => {
+  const [search, setSearch] = React.useState('');
+  const [filterRole, setFilterRole] = React.useState('All');
+
   const usersList = [
-    { name: 'John Doe', email: 'admin@apexpm.com', role: 'Super Admin', company: 'SaaS Platform Owner', status: 'Active', lastLogin: '2026-07-20 05:12' },
-    { name: 'Sarah Davis', email: 'manager@apexpm.com', role: 'Property Manager', company: 'Apex Property Management', status: 'Active', lastLogin: '2026-07-20 04:33' },
-    { name: 'Lakeside Development', email: 'owner@apexpm.com', role: 'Owner', company: 'Lakeside Development Co', status: 'Active', lastLogin: '2026-07-19 14:02' },
-    { name: 'Robert Johnson', email: 'tenant@apexpm.com', role: 'Tenant', company: 'Apex Rental Portfolio', status: 'Active', lastLogin: '2026-07-20 02:11' },
-    { name: 'Alex Thompson', email: 'alex@sunsetvillas.com', role: 'Property Manager', company: 'Horizon Living', status: 'Suspended', lastLogin: '2026-06-12 11:24' }
+    { name: 'John Doe',            email: 'admin@apexpm.com',        role: 'Super Admin',      company: 'SaaS Platform Owner',        status: 'Active',    lastLogin: '2026-07-20 05:12', avatar: 'JD' },
+    { name: 'Sarah Davis',         email: 'manager@apexpm.com',      role: 'Property Manager', company: 'Apex Property Management',   status: 'Active',    lastLogin: '2026-07-20 04:33', avatar: 'SD' },
+    { name: 'Lakeside Development',email: 'owner@apexpm.com',        role: 'Owner',            company: 'Lakeside Development Co',    status: 'Active',    lastLogin: '2026-07-19 14:02', avatar: 'LD' },
+    { name: 'Robert Johnson',      email: 'tenant@apexpm.com',       role: 'Tenant',           company: 'Apex Rental Portfolio',      status: 'Active',    lastLogin: '2026-07-20 02:11', avatar: 'RJ' },
+    { name: 'Alex Thompson',       email: 'alex@sunsetvillas.com',   role: 'Property Manager', company: 'Horizon Living',             status: 'Suspended', lastLogin: '2026-06-12 11:24', avatar: 'AT' },
+    { name: 'Maria Gonzalez',      email: 'maria@grandavenue.com',   role: 'Owner',            company: 'Grand Avenue Realty',        status: 'Active',    lastLogin: '2026-07-21 09:10', avatar: 'MG' },
+    { name: 'David Kim',           email: 'david@northsideprop.com', role: 'Tenant',           company: 'Northside Properties',       status: 'Inactive',  lastLogin: '2026-07-10 15:44', avatar: 'DK' },
   ];
 
+  const roleColors: Record<string, string> = {
+    'Super Admin':      'bg-violet-100 text-violet-700 border-violet-200',
+    'Property Manager': 'bg-blue-100 text-blue-700 border-blue-200',
+    'Owner':            'bg-amber-100 text-amber-700 border-amber-200',
+    'Tenant':           'bg-emerald-100 text-emerald-700 border-emerald-200',
+  };
+
+  const avatarColors: Record<string, string> = {
+    'Super Admin':      'bg-violet-600',
+    'Property Manager': 'bg-blue-600',
+    'Owner':            'bg-amber-500',
+    'Tenant':           'bg-emerald-600',
+  };
+
+  const statusColors: Record<string, string> = {
+    'Active':    'bg-emerald-100 text-emerald-700 border-emerald-200',
+    'Suspended': 'bg-rose-100 text-rose-700 border-rose-200',
+    'Inactive':  'bg-slate-100 text-slate-500 border-slate-200',
+  };
+
+  const statusDot: Record<string, string> = {
+    'Active':    'bg-emerald-500',
+    'Suspended': 'bg-rose-500',
+    'Inactive':  'bg-slate-400',
+  };
+
+  const roles = ['All', 'Super Admin', 'Property Manager', 'Owner', 'Tenant'];
+
+  const filtered = usersList.filter(u => {
+    const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
+                        u.email.toLowerCase().includes(search.toLowerCase()) ||
+                        u.company.toLowerCase().includes(search.toLowerCase());
+    const matchRole = filterRole === 'All' || u.role === filterRole;
+    return matchSearch && matchRole;
+  });
+
+  const total     = usersList.length;
+  const active    = usersList.filter(u => u.status === 'Active').length;
+  const suspended = usersList.filter(u => u.status === 'Suspended').length;
+  const inactive  = usersList.filter(u => u.status === 'Inactive').length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-foreground">
       <PageHeader
         title="Global Platform Users"
         description="Oversee and manage global accounts, role configurations, and access details."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Platform Users' }]}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Super Admin', href: '/super-admin' }, { label: 'Platform Users' }]}
+        action={{
+          label: 'Invite User',
+          onClick: () => {},
+          icon: <Plus className="w-4 h-4" />
+        }}
       />
-      <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
+
+      {/* KPI STAT CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Users',    value: total,     color: 'text-primary',    bg: 'bg-primary/10',    icon: Users },
+          { label: 'Active',         value: active,    color: 'text-emerald-600', bg: 'bg-emerald-100',  icon: CheckCircle },
+          { label: 'Suspended',      value: suspended, color: 'text-rose-600',    bg: 'bg-rose-100',     icon: Ban },
+          { label: 'Inactive',       value: inactive,  color: 'text-slate-500',   bg: 'bg-slate-100',    icon: Clock },
+        ].map(({ label, value, color, bg, icon: Icon }) => (
+          <div key={label} className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${bg}`}>
+              <Icon className={`w-5 h-5 ${color}`} />
+            </div>
+            <div>
+              <p className="text-2xl font-black text-foreground">{value}</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* FILTERS + SEARCH */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Role Filter Pills */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {roles.map(r => (
+            <button
+              key={r}
+              onClick={() => setFilterRole(r)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                filterRole === r
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-primary'
+              }`}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-8 pr-4 py-2 text-xs rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 w-52 transition-all"
+          />
+        </div>
+      </div>
+
+      {/* USERS TABLE */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-muted/50 border-b text-muted-foreground font-bold uppercase tracking-wider">
-                <th className="p-4">User Name</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Platform Role</th>
-                <th className="p-4">Assigned Company</th>
-                <th className="p-4">Account Status</th>
-                <th className="p-4">Last Login</th>
+              <tr className="bg-muted/60 border-b border-border text-muted-foreground font-extrabold uppercase tracking-wider text-[10px]">
+                <th className="px-5 py-3.5">User</th>
+                <th className="px-5 py-3.5">Email</th>
+                <th className="px-5 py-3.5">Platform Role</th>
+                <th className="px-5 py-3.5">Assigned Company</th>
+                <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5">Last Login</th>
+                <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y font-medium text-foreground">
-              {usersList.map((u, i) => (
-                <tr key={i} className="hover:bg-accent/40 transition">
-                  <td className="p-4 font-bold">{u.name}</td>
-                  <td className="p-4 font-mono">{u.email}</td>
-                  <td className="p-4">
-                    <StatusBadge status={u.role} />
+            <tbody className="divide-y divide-border">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground text-sm font-semibold">
+                    No users found matching your search.
                   </td>
-                  <td className="p-4">{u.company}</td>
-                  <td className="p-4">
-                    <StatusBadge status={u.status} />
+                </tr>
+              ) : filtered.map((u, i) => (
+                <tr key={i} className="hover:bg-accent/40 transition-colors group">
+                  {/* Avatar + Name */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-extrabold text-xs shrink-0 shadow-sm ${avatarColors[u.role] ?? 'bg-primary'}`}>
+                        {u.avatar}
+                      </div>
+                      <span className="font-bold text-foreground">{u.name}</span>
+                    </div>
                   </td>
-                  <td className="p-4 text-muted-foreground font-mono">{u.lastLogin}</td>
+
+                  {/* Email */}
+                  <td className="px-5 py-4 font-mono text-muted-foreground">{u.email}</td>
+
+                  {/* Role Badge */}
+                  <td className="px-5 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-extrabold border ${roleColors[u.role] ?? 'bg-muted text-muted-foreground border-border'}`}>
+                      {u.role}
+                    </span>
+                  </td>
+
+                  {/* Company */}
+                  <td className="px-5 py-4 font-semibold text-foreground/80">{u.company}</td>
+
+                  {/* Status Badge */}
+                  <td className="px-5 py-4">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-extrabold border ${statusColors[u.status] ?? 'bg-muted border-border'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${statusDot[u.status] ?? 'bg-slate-400'}`} />
+                      {u.status}
+                    </span>
+                  </td>
+
+                  {/* Last Login */}
+                  <td className="px-5 py-4 text-muted-foreground font-mono">{u.lastLogin}</td>
+
+                  {/* Actions */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button title="Edit User" className="p-1.5 rounded-lg hover:bg-primary/10 text-primary border border-transparent hover:border-primary/20 transition-all">
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button title="Reset Password" className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-600 border border-transparent hover:border-amber-200 transition-all">
+                        <Key className="w-3.5 h-3.5" />
+                      </button>
+                      <button title={u.status === 'Suspended' ? 'Reactivate' : 'Suspend'} className="p-1.5 rounded-lg hover:bg-rose-500/10 text-rose-500 border border-transparent hover:border-rose-200 transition-all">
+                        {u.status === 'Suspended' ? <Power className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Table Footer */}
+        <div className="px-5 py-3 border-t border-border bg-muted/30 flex items-center justify-between">
+          <span className="text-[11px] text-muted-foreground font-semibold">
+            Showing {filtered.length} of {total} users
+          </span>
+          <span className="text-[11px] text-muted-foreground font-semibold">
+            Last updated: 2026-07-23
+          </span>
         </div>
       </div>
     </div>
