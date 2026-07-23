@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import api from '../../api';
-import { PageHeader } from '../../components/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
 import { CommunicationPanel } from '../../components/CommunicationPanel';
-import { Phone, Mail, MessageCircle, Wrench, User, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
+import { CommunicationLayout } from './components/CommunicationLayout';
+import { Phone, Mail, MessageCircle, Wrench } from 'lucide-react';
 import { StatusBadge } from '../../components/StatusBadge';
 
 export const CommMessagesPage: React.FC = () => {
-  const queryClient = useQueryClient();
   const [selectedTicketId, setSelectedTicketId] = useState<string>('maint-1');
 
-  // Fetch maintenance requests & messaging list
-  const { data: requests = [], isLoading } = useQuery({
+  const { data: requests = [] } = useQuery({
     queryKey: ['maintenance-requests-comm'],
     queryFn: async () => {
       try {
@@ -24,7 +21,6 @@ export const CommMessagesPage: React.FC = () => {
       }
     },
   });
-
 
   const activeRequest: any = requests.find((r: any) => r.id === selectedTicketId) || requests[0] || {
     id: 'maint-1',
@@ -40,21 +36,20 @@ export const CommMessagesPage: React.FC = () => {
   };
 
   const tenantPhone = activeRequest.tenantPhone || '+1 (555) 234-5678';
-  const tenantEmail = activeRequest.tenantEmail || 'resident@rentals.com';
+  const tenantEmail = activeRequest.tenantEmail || 'tenant@rentals.com';
   const cleanPhone = tenantPhone.replace(/[^0-9]/g, '');
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${activeRequest.tenantName}, updating you regarding maintenance ticket #${activeRequest.id}: "${activeRequest.title}"`)}`;
 
   return (
-    <div className="space-y-6 text-foreground">
-      <PageHeader
-        title="In-App Maintenance Communication Hub"
-        description="Reply directly to tenant maintenance requests in-app, launch WhatsApp messages, or initiate direct phone calls and emails."
-        breadcrumbs={[
-          { label: 'Home', href: '/communication' },
-          { label: 'Maintenance Messages' },
-        ]}
-      />
-
+    <CommunicationLayout
+      title="Communication Center"
+      description="Manage notifications, messages, conversations and your unified inbox."
+      breadcrumbs={[
+        { label: 'Home', href: '/manager' },
+        { label: 'Communication', href: '/manager/communication' },
+        { label: 'Maintenance Messages' },
+      ]}
+    >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Maintenance Tickets Selector */}
         <Card className="lg:col-span-1 p-4 border bg-card flex flex-col gap-3">
@@ -88,7 +83,7 @@ export const CommMessagesPage: React.FC = () => {
                   <StatusBadge status={req.status || 'Open'} />
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">{req.tenantName || 'Resident'}</span>
+                  <span className="font-semibold text-foreground">{req.tenantName || 'Tenant'}</span>
                   <span>{req.propertyName || req.property || 'Property Unit'}</span>
                 </div>
               </button>
@@ -113,7 +108,6 @@ export const CommMessagesPage: React.FC = () => {
                 <span>{activeRequest.propertyName || activeRequest.property || 'Main Building Unit'}</span>
               </p>
             </div>
-
 
             {/* Quick Action Launchers */}
             <div className="flex items-center gap-2 flex-wrap">
@@ -143,16 +137,16 @@ export const CommMessagesPage: React.FC = () => {
             </div>
           </Card>
 
-          {/* Upgraded Communication Panel Component */}
+          {/* Communication Panel */}
           <CommunicationPanel
-            entityName={activeRequest.tenantName || 'Resident'}
+            entityName={activeRequest.tenantName || 'Tenant'}
             tenantPhone={tenantPhone}
             tenantEmail={tenantEmail}
             requestTitle={activeRequest.title}
           />
         </div>
       </div>
-    </div>
+    </CommunicationLayout>
   );
 };
 
